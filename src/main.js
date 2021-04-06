@@ -1,10 +1,10 @@
-import {createSiteMenuTemplate} from './view/site-menu';
-import {createRouteAndPriceTemplate} from './view/route-and-price';
-import {createSiteFilters} from './view/site-filters';
-import {createEventsFiltersTemplate} from './view/events-filters';
-import {createFormEditTemplate} from './view/form-edit';
-import {createEventsPointTemplate} from './view/event-point';
-import {createEventsListTemplate} from './view/events-list';
+import { createSiteMenuTemplate } from './view/site-menu';
+import { createRouteAndPriceTemplate } from './view/route-and-price';
+import { createSiteFilters } from './view/site-filters';
+import { createEventsFiltersTemplate } from './view/events-filters';
+import { createFormEditTemplate } from './view/form-edit';
+import { createEventsPointTemplate } from './view/event-point';
+import { createEventsListTemplate } from './view/events-list';
 
 const MAX_LIST_LENGTH = 4;
 
@@ -25,11 +25,8 @@ render(eventMainElement, createEventsFiltersTemplate(), 'beforeend');
 render(eventMainElement, createEventsListTemplate(), 'beforeend');
 
 const eventList = siteMainElement.querySelector('.trip-events__list');
-const renderEventList = function () {
-  render(eventList, createFormEditTemplate(), 'beforeend');
-  for (let i = 1; i < MAX_LIST_LENGTH; i++) {
-    render(eventList, createEventsPointTemplate(), 'beforeend');
-  }
-};
+render(eventList, createFormEditTemplate(), 'beforeend');
 
-renderEventList();
+for (let i = 1; i < MAX_LIST_LENGTH; i++) {
+  render(eventList, createEventsPointTemplate(), 'beforeend');
+}
