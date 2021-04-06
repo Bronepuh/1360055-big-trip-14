@@ -13,12 +13,12 @@ const render = (container, template, place) => {
 };
 
 const siteMainElement = document.querySelector('.page-body');
-const RouteAndPrice = siteMainElement.querySelector('.trip-main');
+const routeAndPrice = siteMainElement.querySelector('.trip-main');
 const siteMenu = siteMainElement.querySelector('.trip-controls__navigation');
 const siteFilters = siteMainElement.querySelector('.trip-controls__filters');
 const eventMainElement = siteMainElement.querySelector('.trip-events');
 
-render(RouteAndPrice, createRouteAndPriceTemplate(), 'afterbegin');
+render(routeAndPrice, createRouteAndPriceTemplate(), 'afterbegin');
 render(siteMenu, createSiteMenuTemplate(), 'beforeend');
 render(siteFilters, createSiteFilters(), 'beforeend');
 render(eventMainElement, createEventsFiltersTemplate(), 'beforeend');
