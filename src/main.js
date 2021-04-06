@@ -30,6 +30,6 @@ const renderEventList = function () {
   for (let i = 1; i < MAX_LIST_LENGTH; i++) {
     render(eventList, createEventsPointTemplate(), 'beforeend');
   }
-}
+};
 
 renderEventList();
