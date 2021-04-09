@@ -5,11 +5,13 @@ import { createEventsFiltersTemplate } from './view/events-filters';
 import { createFormEditTemplate } from './view/form-edit';
 import { createEventsPointTemplate } from './view/event-point';
 import { createEventsListTemplate } from './view/events-list';
+import { generatePoint } from './mock/points';
 
-const MAX_LIST_LENGTH = 4;
+const POINTS_COUNT = 15;
+const points = new Array(POINTS_COUNT).fill().map(generatePoint);
 
 const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
+  return container.insertAdjacentHTML(place, template);
 };
 
 const siteMainElement = document.querySelector('.page-body');
@@ -21,12 +23,17 @@ const eventMainElement = siteMainElement.querySelector('.trip-events');
 render(routeAndPrice, createRouteAndPriceTemplate(), 'afterbegin');
 render(siteMenu, createSiteMenuTemplate(), 'beforeend');
 render(siteFilters, createSiteFilters(), 'beforeend');
-render(eventMainElement, createEventsFiltersTemplate(), 'beforeend');
-render(eventMainElement, createEventsListTemplate(), 'beforeend');
 
+render(eventMainElement, createEventsFiltersTemplate(points[0]), 'beforeend');
+
+// рисую список эвентов
+render(eventMainElement, createEventsListTemplate(POINTS_COUNT), 'beforeend');
+// нахожу этот список
 const eventList = siteMainElement.querySelector('.trip-events__list');
-render(eventList, createFormEditTemplate(), 'beforeend');
+render(eventList, createFormEditTemplate(points[0]), 'beforeend');
 
-for (let i = 1; i < MAX_LIST_LENGTH; i++) {
-  render(eventList, createEventsPointTemplate(), 'beforeend');
+if (POINTS_COUNT > 0) {
+  for (let i = 1; i < POINTS_COUNT; i++) {
+    render(eventList, createEventsPointTemplate(points[i]), 'beforeend');
+  }
 }
