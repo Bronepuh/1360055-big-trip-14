@@ -9,26 +9,19 @@ export const getRandomInteger = (a = 0, b = 1) => {
 // тасование Фишера — Йетса
 const shuffle = function (array) {
   for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
-}
+};
 
 const gap = function (array, maxCount) {
   return array.slice(0, maxCount);
-}
+};
 
 export const getUniqueRandomFromRandom = function (array, maxCount) {
   shuffle(array);
   return gap(array, maxCount);
-}
-
-
-
-
-
-
-
+};
 
 // вычмсление продолжительности эвента
 let startTime = 0;

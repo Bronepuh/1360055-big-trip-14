@@ -15,7 +15,7 @@ export const createEventsPointTemplate = (point) => {
     } else if (duration > MAX_GAP_IN_MINUTES) {
       return 'DD[D] HH[H] mm[M]';
     }
-  }
+  };
 
   const startDate = dayjs(dateFrom).format('MMM DD');
   const timeStart = dayjs(dateFrom).format(getFormat());
