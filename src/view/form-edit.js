@@ -19,7 +19,7 @@ export const createFormEditTemplate = (point) => {
     const generateOffersList = function () {
       if (offers.length > 0) {
         let newOffersList = '';
-        for (let i = 0; i < offers.length - 1; i++) {
+        for (let i = 0; i < offers.length; i++) {
           const offer = offers[i];
           newOffersList += `<div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked()}>
@@ -38,10 +38,11 @@ export const createFormEditTemplate = (point) => {
     const offersItems = generateOffersList();
 
     // генерация картинок
-    const MIN_PICTURES_COUNT = 1;
+    const MIN_PICTURES_COUNT = 0;
     const MAX_PICTURES_COUNT = 5;
     const picturesArr = [1, 2, 3, 4, 5];
-    const pictures = getUniqueRandomFromRandom(picturesArr, MIN_PICTURES_COUNT, MAX_PICTURES_COUNT);
+    const pictureCountRandom = getRandomInteger(MIN_PICTURES_COUNT, MAX_PICTURES_COUNT);
+    const pictures = getUniqueRandomFromRandom(picturesArr, pictureCountRandom);
 
     const generatePicturesList = function () {
       if (pictures.length > 0) {

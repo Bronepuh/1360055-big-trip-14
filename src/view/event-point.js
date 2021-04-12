@@ -6,20 +6,23 @@ export const createEventsPointTemplate = (point) => {
   const date1 = dayjs(dateFrom);
   const date2 = dayjs(dateTo);
   const duration = date2.diff(date1, 'minutes');
+  const MINUTE = 59;
+  const MAX_GAP_IN_MINUTES = 1440;
 
-  const startDate = dayjs(dateFrom).format('MMM DD');
-  let timeStart = dayjs(dateFrom).format('mm');
-  let timeEnd = dayjs(dateTo).format('mm');
-
-  if (duration > 60 && duration < 1440) {
-    timeStart = dayjs(dateFrom).format('HH:mm');
-    timeEnd = dayjs(dateTo).format('HH:mm');
-  } else if (duration > 1440) {
-    timeStart = dayjs(dateFrom).format('DD[D] HH[H] mm[M]');
-    timeEnd = dayjs(dateTo).format('DD[D] HH[H] mm[M]');
+  const getFormat = function () {
+    if (duration > MINUTE && duration < MAX_GAP_IN_MINUTES) {
+      return 'HH:mm';
+    } else if (duration > MAX_GAP_IN_MINUTES) {
+      return 'DD[D] HH[H] mm[M]';
+    }
   }
 
-  const isFavoritHtml = function () {
+  const startDate = dayjs(dateFrom).format('MMM DD');
+  const timeStart = dayjs(dateFrom).format(getFormat());
+  const timeEnd = dayjs(dateTo).format(getFormat());
+
+
+  const getFavoriteTemplate = function () {
     if (isFavorite) {
       return `<svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
       <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -57,7 +60,7 @@ export const createEventsPointTemplate = (point) => {
       </li>
     </ul>
     <button class="event__favorite-btn event__favorite-btn--active" type="button">
-      ${isFavoritHtml()}
+      ${getFavoriteTemplate()}
     </button>
     <button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>

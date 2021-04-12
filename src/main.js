@@ -11,7 +11,7 @@ const POINTS_COUNT = 15;
 const points = new Array(POINTS_COUNT).fill().map(generatePoint);
 
 const render = (container, template, place) => {
-  return container.insertAdjacentHTML(place, template);
+  container.insertAdjacentHTML(place, template);
 };
 
 const siteMainElement = document.querySelector('.page-body');

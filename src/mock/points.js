@@ -3,11 +3,13 @@ import { getRandomInteger, getUniqueRandomFromRandom, generateDate } from '../ut
 
 const MIN_DESCRIPTIONS_COUNT = 1;
 const MAX_DESCRIPTIONS_COUNT = 5;
+const descriptionsCountRandom = getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT);
 
 const MIN_OFFERS_COUNT = 0;
 const MAX_OFFERS_COUNT = 5;
+const offersCountRandom = getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT);
 
-const descriptions = [
+const DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
   'Fusce tristique felis at fermentum pharetra.',
@@ -57,10 +59,10 @@ export const generatePoint = function () {
     'basePrice': getRandomInteger(550, 1200),
     'dateFrom': generateDate(),
     'dateTo': generateDate(),
-    'destination': getUniqueRandomFromRandom(descriptions, MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT).join(' '),
+    'destination': getUniqueRandomFromRandom(DESCRIPTIONS, descriptionsCountRandom).join(' '),
     'id': nanoid(),
     'isFavorite': Boolean(getRandomInteger(0, 1)),
-    'offers': getUniqueRandomFromRandom(OFFERS, MIN_OFFERS_COUNT, MAX_OFFERS_COUNT),
+    'offers': getUniqueRandomFromRandom(OFFERS, offersCountRandom),
     'type': POINTS_TYPES[getRandomInteger(0, POINTS_TYPES.length - 1)],
   };
 };

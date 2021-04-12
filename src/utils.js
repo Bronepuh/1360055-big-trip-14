@@ -6,31 +6,35 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-export const getUniqueRandomFromRandom = (arr, minCount, maxCount) => {
-  const randomCount = getRandomInteger(minCount, maxCount);
-  const newArr = [];
+// тасование Фишера — Йетса
+const shuffle = function (array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 
-  const getRandomElements = function () {
-    for (let i = 0; i < randomCount; i++) {
-      let randomElement = arr[getRandomInteger(0, arr.length - 1)];
-      while (newArr.includes(randomElement)) {
-        randomElement = arr[getRandomInteger(0, arr.length - 1)];
-        if (newArr.length == arr.length) {
-          throw Error('Warning!!! бесконечный цикл detected!!!');
-        }
-      }
-      newArr.push(randomElement);
-    }
-  };
-  getRandomElements();
-  return newArr;
-};
+const gap = function (array, maxCount) {
+  return array.slice(0, maxCount);
+}
+
+export const getUniqueRandomFromRandom = function (array, maxCount) {
+  shuffle(array);
+  return gap(array, maxCount);
+}
+
+
+
+
+
+
+
 
 // вычмсление продолжительности эвента
 let startTime = 0;
-let duration = 0;
 
 export const generateDate = () => {
+  let duration = 0;
   const MAX_TIME_GAP = 2880;
   const newTimeGap = startTime + MAX_TIME_GAP;
   const minutesGap = getRandomInteger(startTime, newTimeGap);

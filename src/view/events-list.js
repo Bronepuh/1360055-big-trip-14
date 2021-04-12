@@ -1,5 +1,5 @@
-export const createEventsListTemplate = (POINTS_COUNT) => {
-  return POINTS_COUNT > 0 ? `<ul class="trip-events__list">
+export const createEventsListTemplate = (hasPoints) => {
+  return hasPoints > 0 ? `<ul class="trip-events__list">
   </ul>` :
     `<ul class="trip-events__list">
   </ul>
