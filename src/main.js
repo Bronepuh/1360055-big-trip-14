@@ -31,9 +31,8 @@ render(eventMainElement, createEventsListTemplate(POINTS_COUNT), 'beforeend');
 // нахожу этот список
 const eventList = siteMainElement.querySelector('.trip-events__list');
 render(eventList, createFormEditTemplate(points[0]), 'beforeend');
+render(eventList, createFormEditTemplate(points[1]), 'beforeend');
 
-if (POINTS_COUNT > 0) {
-  for (let i = 1; i < POINTS_COUNT; i++) {
-    render(eventList, createEventsPointTemplate(points[i]), 'beforeend');
-  }
+for (let i = 1; i < POINTS_COUNT; i++) {
+  render(eventList, createEventsPointTemplate(points[i]), 'beforeend');
 }

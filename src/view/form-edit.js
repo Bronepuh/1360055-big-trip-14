@@ -1,61 +1,45 @@
 import dayjs from 'dayjs';
-import { getRandomInteger, getUniqueRandomFromRandom } from '../utils';
 
-export const createFormEditTemplate = (point) => {
-
-  if (point) {
-    const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
-    const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
-    const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
-
-    const isChecked = function () {
-      const flag = Boolean(getRandomInteger(0, 1));
-      if (flag) {
-        return 'checked';
-      } return '';
-    };
-
-    // генерация дополнительных опций
-    const generateOffersList = function () {
-      if (offers.length > 0) {
-        let newOffersList = '';
-        for (let i = 0; i < offers.length; i++) {
-          const offer = offers[i];
-          newOffersList += `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked()}>
+// генерация дополнительных опций
+const generateOffersList = function (offers) {
+  if (offers.length > 0) {
+    let newOffersList = '';
+    for (let i = 0; i < offers.length; i++) {
+      const offer = offers[i];
+      newOffersList += `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${offers[i].isChecked ? 'checked' : ''}>
           <label class="event__offer-label" for="event-offer-luggage-1">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${offer.price}</span>
           </label>
         </div>`;
-        } return newOffersList;
-      } else {
-        return '';
-      }
-    };
+    } return newOffersList;
+  } else {
+    return '';
+  }
+};
 
-    const offersItems = generateOffersList();
+// генерация картинок
+const generatePicturesList = function (pictures) {
+  if (pictures.length > 0) {
+    let newPicturesList = '';
+    for (let i = 0; i < pictures.length; i++) {
+      newPicturesList += `<img class="event__photo" src="http://picsum.photos/248/152?r=/${pictures[i]}.jpg" alt="Event photo">`;
+    } return newPicturesList;
+  } else {
+    return '';
+  }
+};
 
-    // генерация картинок
-    const MIN_PICTURES_COUNT = 0;
-    const MAX_PICTURES_COUNT = 5;
-    const picturesArr = [1, 2, 3, 4, 5];
-    const pictureCountRandom = getRandomInteger(MIN_PICTURES_COUNT, MAX_PICTURES_COUNT);
-    const pictures = getUniqueRandomFromRandom(picturesArr, pictureCountRandom);
+export const createFormEditTemplate = (point) => {
 
-    const generatePicturesList = function () {
-      if (pictures.length > 0) {
-        let newPicturesList = '';
-        for (let i = 0; i < pictures.length; i++) {
-          newPicturesList += `<img class="event__photo" src="http://picsum.photos/248/152?r=/${pictures[i]}.jpg" alt="Event photo">`;
-        } return newPicturesList;
-      } else {
-        return '';
-      }
-    };
-
-    const eventPhotos = generatePicturesList();
+  if (point) {
+    const { basePrice, dateFrom, dateTo, destination, type, pictures } = point;
+    const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
+    const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
+    const offersItems = generateOffersList(type.offers);
+    const eventPhotos = generatePicturesList(pictures);
 
     return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">

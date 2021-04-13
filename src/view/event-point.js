@@ -1,37 +1,38 @@
 import dayjs from 'dayjs';
 
+const getFormat = function (from, to) {
+  const hours = to.diff(from, 'hours');
+  const days = to.diff(from, 'days');
+  if (days > 0) {
+    return 'DD[D] HH[H] mm[M]';
+  } else if (hours > 0) {
+    return 'HH:mm';
+  } else {
+    return 'mm';
+  }
+};
+
+const getFavoriteTemplate = function (isFavorite) {
+  if (isFavorite) {
+    return `<svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+    <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+  </svg>`;
+  } else {
+    return `<span>Add to favorite
+    </span>`;
+  }
+};
+
 export const createEventsPointTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = point;
-
-  const date1 = dayjs(dateFrom);
-  const date2 = dayjs(dateTo);
-  const duration = date2.diff(date1, 'minutes');
-  const MINUTE = 59;
-  const MAX_GAP_IN_MINUTES = 1440;
-
-  const getFormat = function () {
-    if (duration > MINUTE && duration < MAX_GAP_IN_MINUTES) {
-      return 'HH:mm';
-    } else if (duration > MAX_GAP_IN_MINUTES) {
-      return 'DD[D] HH[H] mm[M]';
-    }
-  };
-
+  const from = dayjs(dateFrom);
+  const to = dayjs(dateTo);
+  const format = getFormat(from, to);
+  const minutes = to.diff(from, 'minutes');
   const startDate = dayjs(dateFrom).format('MMM DD');
-  const timeStart = dayjs(dateFrom).format(getFormat());
-  const timeEnd = dayjs(dateTo).format(getFormat());
-
-
-  const getFavoriteTemplate = function () {
-    if (isFavorite) {
-      return `<svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-      <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-    </svg>`;
-    } else {
-      return `<span>Add to favorite
-      </span>`;
-    }
-  };
+  const timeStart = dayjs(dateFrom).format(format);
+  const timeEnd = dayjs(dateTo).format(format);
+  const favorite = getFavoriteTemplate(isFavorite);
 
   return `<li class="trip-events__item">
   <div class="event">
@@ -46,7 +47,7 @@ export const createEventsPointTemplate = (point) => {
         &mdash;
         <time class="event__end-time" datetime="2019-03-18T11:00">${timeEnd}</time>
       </p>
-      <p class="event__duration">${duration}&nbsp;M</p>
+      <p class="event__duration">${minutes}&nbsp;M</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
@@ -60,7 +61,7 @@ export const createEventsPointTemplate = (point) => {
       </li>
     </ul>
     <button class="event__favorite-btn event__favorite-btn--active" type="button">
-      ${getFavoriteTemplate()}
+      ${favorite}
     </button>
     <button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>

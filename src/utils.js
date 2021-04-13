@@ -8,10 +8,12 @@ export const getRandomInteger = (a = 0, b = 1) => {
 
 // тасование Фишера — Йетса
 const shuffle = function (array) {
-  for (let i = array.length - 1; i > 0; i--) {
+  const newArray = array.slice(0);
+  for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
   }
+  return newArray;
 };
 
 const gap = function (array, maxCount) {
@@ -19,11 +21,11 @@ const gap = function (array, maxCount) {
 };
 
 export const getUniqueRandomFromRandom = function (array, maxCount) {
-  shuffle(array);
-  return gap(array, maxCount);
+  const shaffledArray = shuffle(array);
+  return gap(shaffledArray, maxCount);
 };
 
-// вычмсление продолжительности эвента
+// вычисление продолжительности эвента
 let startTime = 0;
 
 export const generateDate = () => {
