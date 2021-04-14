@@ -1,25 +1,5 @@
 import dayjs from 'dayjs';
 
-// генерация дополнительных опций
-const generateOffersList = function (offers) {
-  if (offers.length > 0) {
-    let newOffersList = '';
-    for (let i = 0; i < offers.length; i++) {
-      const offer = offers[i];
-      newOffersList += `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${offers[i].isChecked ? 'checked' : ''}>
-          <label class="event__offer-label" for="event-offer-luggage-1">
-            <span class="event__offer-title">${offer.title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offer.price}</span>
-          </label>
-        </div>`;
-    } return newOffersList;
-  } else {
-    return '';
-  }
-};
-
 // генерация картинок
 const generatePicturesList = function (pictures) {
   if (pictures.length > 0) {
@@ -32,13 +12,53 @@ const generatePicturesList = function (pictures) {
   }
 };
 
-export const createFormEditTemplate = (point) => {
+// генерация дополнительных опций
+const getCurrentType = function (pointTypes, type) {
+  for (let i = 0; i < pointTypes.length; i++) {
+    if (pointTypes[i].type === type) {
+      const currentType = {
+        type: type,
+        offers: pointTypes[i].offers,
+      };
+      return currentType;
+    }
+  }
+};
+
+
+const generateOffersList = function (pointTypes, type, offers) {
+
+  const currentType = getCurrentType(pointTypes, type);
+  const newOffers = currentType.offers;
+  const checkedOffers = offers;
+
+  if (newOffers.length > 0) {
+    let newOffersList = '';
+
+    for (let i = 0; i < newOffers.length; i++) {
+      const offer = newOffers[i];
+      const isChecked = checkedOffers.some((elem) => elem.title === offer.title);
+      newOffersList += `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage"} ${isChecked ? 'checked' : ''}>
+          <label class="event__offer-label" for="event-offer-luggage-1">
+            <span class="event__offer-title">${offer.title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </label>
+        </div>`;
+    } return newOffersList;
+  } else {
+    return '';
+  }
+};
+
+export const createFormEditTemplate = (point, pointTypes) => {
 
   if (point) {
-    const { basePrice, dateFrom, dateTo, destination, type, pictures } = point;
+    const { basePrice, dateFrom, dateTo, destination, offers, type, pictures } = point;
     const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
     const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
-    const offersItems = generateOffersList(type.offers);
+    const offersItems = generateOffersList(pointTypes, type, offers);
     const eventPhotos = generatePicturesList(pictures);
 
     return `<li class="trip-events__item">
@@ -47,7 +67,7 @@ export const createFormEditTemplate = (point) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type.type}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 

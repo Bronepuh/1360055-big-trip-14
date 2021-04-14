@@ -5,7 +5,6 @@ const MIN_DESCRIPTIONS_COUNT = 1;
 const MAX_DESCRIPTIONS_COUNT = 5;
 
 const MIN_OFFERS_COUNT = 0;
-const MAX_OFFERS_COUNT = 5;
 
 const MIN_PICTURES_COUNT = 1;
 const MAX_PICTURES_COUNT = 5;
@@ -25,76 +24,158 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const getOffersArray = function () {
-  return [
-    {
-      'title': 'Add luggage',
-      'price': 30,
-      'isChecked': Boolean(getRandomInteger(0, 1)),
-    }, {
-      'title': 'Switch to comfort class',
-      'price': 100,
-      'isChecked': Boolean(getRandomInteger(0, 1)),
-    }, {
-      'title': 'Add meal',
-      'price': 15,
-      'isChecked': Boolean(getRandomInteger(0, 1)),
-    }, {
-      'title': 'Choose seats',
-      'isChecked': Boolean(getRandomInteger(0, 1)),
-      'price': 5,
-    }, {
-      'title': 'Travel by train',
-      'price': 40,
-      'isChecked': Boolean(getRandomInteger(0, 1)),
-    },
-  ];
-};
-
-const POINTS_TYPES = [
+export const POINTS_TYPES = [
   {
     'type': 'taxi',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      }, {
+        'title': 'Add meal',
+        'price': 15,
+      }, {
+        'title': 'Choose seats',
+        'price': 5,
+      },
+    ],
   },
   {
     'type': 'bus',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      }, {
+        'title': 'Add meal',
+        'price': 15,
+      },
+    ],
   },
   {
     'type': 'train',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      },
+    ],
   },
   {
     'type': 'ship',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      },
+    ],
   },
   {
     'type': 'transport',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      }, {
+        'title': 'Add meal',
+        'price': 15,
+      },
+    ],
   },
   {
     'type': 'drive',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      },
+    ],
   },
   {
     'type': 'flight',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      }, {
+        'title': 'Add meal',
+        'price': 15,
+      }, {
+        'title': 'Choose seats',
+        'price': 5,
+      }, {
+        'title': 'Travel by train',
+        'price': 40,
+      },
+    ],
   },
   {
     'type': 'check-in',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      },
+    ],
   },
   {
     'type': 'sightseeing',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      },
+      {
+        'title': 'Travel by train',
+        'price': 40,
+      },
+    ],
   },
   {
     'type': 'restaurant',
-    'offers': getUniqueRandomFromRandom(getOffersArray(), getRandomInteger(MIN_OFFERS_COUNT, MAX_OFFERS_COUNT)),
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      }, {
+        'title': 'Add meal',
+        'price': 15,
+      }, {
+        'title': 'Choose seats',
+        'price': 5,
+      },
+    ],
   },
 ];
 
 export const generatePoint = function () {
+  const newType = POINTS_TYPES[getRandomInteger(0, POINTS_TYPES.length - 1)];
+  const checkedOffers = getUniqueRandomFromRandom(newType.offers, getRandomInteger(MIN_OFFERS_COUNT, newType.offers.length));
+
   return {
     'basePrice': getRandomInteger(550, 1200),
     'dateFrom': generateDate(),
@@ -102,7 +183,8 @@ export const generatePoint = function () {
     'destination': getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
     'id': nanoid(),
     'isFavorite': Boolean(getRandomInteger(0, 1)),
-    'type': POINTS_TYPES[getRandomInteger(0, POINTS_TYPES.length - 1)],
+    'offers': checkedOffers,
+    'type': newType.type,
     'pictures': getUniqueRandomFromRandom(PICTURES_ARR, getRandomInteger(MIN_PICTURES_COUNT, MAX_PICTURES_COUNT)),
   };
 };

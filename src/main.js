@@ -6,6 +6,7 @@ import { createFormEditTemplate } from './view/form-edit';
 import { createEventsPointTemplate } from './view/event-point';
 import { createEventsListTemplate } from './view/events-list';
 import { generatePoint } from './mock/points';
+import { POINTS_TYPES } from './mock/points';
 
 const POINTS_COUNT = 15;
 const points = new Array(POINTS_COUNT).fill().map(generatePoint);
@@ -30,8 +31,8 @@ render(eventMainElement, createEventsFiltersTemplate(points[0]), 'beforeend');
 render(eventMainElement, createEventsListTemplate(POINTS_COUNT), 'beforeend');
 // нахожу этот список
 const eventList = siteMainElement.querySelector('.trip-events__list');
-render(eventList, createFormEditTemplate(points[0]), 'beforeend');
-render(eventList, createFormEditTemplate(points[1]), 'beforeend');
+render(eventList, createFormEditTemplate(points[0], POINTS_TYPES), 'beforeend');
+render(eventList, createFormEditTemplate(points[1], POINTS_TYPES), 'beforeend');
 
 for (let i = 1; i < POINTS_COUNT; i++) {
   render(eventList, createEventsPointTemplate(points[i]), 'beforeend');
