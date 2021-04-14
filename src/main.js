@@ -8,7 +8,7 @@ import { createEventsListTemplate } from './view/events-list';
 import { generatePoint } from './mock/points';
 import { POINTS_TYPES } from './mock/points';
 
-const POINTS_COUNT = 15;
+const POINTS_COUNT = 10;
 const points = new Array(POINTS_COUNT).fill().map(generatePoint);
 
 const render = (container, template, place) => {

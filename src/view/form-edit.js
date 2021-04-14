@@ -2,14 +2,11 @@ import dayjs from 'dayjs';
 
 // генерация картинок
 const generatePicturesList = function (pictures) {
-  if (pictures.length > 0) {
-    let newPicturesList = '';
-    for (let i = 0; i < pictures.length; i++) {
-      newPicturesList += `<img class="event__photo" src="http://picsum.photos/248/152?r=/${pictures[i]}.jpg" alt="Event photo">`;
-    } return newPicturesList;
-  } else {
-    return '';
+  let newPicturesList = '';
+  for (let i = 0; i < pictures.length; i++) {
+    newPicturesList += `<img class="event__photo" src="${pictures[i]}.jpg" alt="Event photo">`;
   }
+  return newPicturesList;
 };
 
 // генерация дополнительных опций
@@ -25,20 +22,16 @@ const getCurrentType = function (pointTypes, type) {
   }
 };
 
-
 const generateOffersList = function (pointTypes, type, offers) {
-
   const currentType = getCurrentType(pointTypes, type);
   const newOffers = currentType.offers;
   const checkedOffers = offers;
+  let newOffersList = '';
 
-  if (newOffers.length > 0) {
-    let newOffersList = '';
-
-    for (let i = 0; i < newOffers.length; i++) {
-      const offer = newOffers[i];
-      const isChecked = checkedOffers.some((elem) => elem.title === offer.title);
-      newOffersList += `<div class="event__offer-selector">
+  for (let i = 0; i < newOffers.length; i++) {
+    const offer = newOffers[i];
+    const isChecked = checkedOffers.some((elem) => elem.title === offer.title);
+    newOffersList += `<div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage"} ${isChecked ? 'checked' : ''}>
           <label class="event__offer-label" for="event-offer-luggage-1">
             <span class="event__offer-title">${offer.title}</span>
@@ -46,10 +39,8 @@ const generateOffersList = function (pointTypes, type, offers) {
             <span class="event__offer-price">${offer.price}</span>
           </label>
         </div>`;
-    } return newOffersList;
-  } else {
-    return '';
   }
+  return newOffersList;
 };
 
 export const createFormEditTemplate = (point, pointTypes) => {

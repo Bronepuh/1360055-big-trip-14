@@ -8,8 +8,24 @@ const MIN_OFFERS_COUNT = 0;
 
 const MIN_PICTURES_COUNT = 1;
 const MAX_PICTURES_COUNT = 5;
+const MIN_PICTURES_URL_NUMBER = 1;
+const MAX_PICTURES_URL_NUMBER = 500;
 
-const PICTURES_ARR = [1, 2, 3, 4, 5];
+const getPictureArray = function () {
+  return [
+    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
+    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
+    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
+    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
+    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
+  ];
+};
+
+const getRandomPictureCount = function () {
+  const pictureArray = getPictureArray();
+  const randomPictureArray = getUniqueRandomFromRandom(pictureArray, getRandomInteger(MIN_PICTURES_COUNT, MAX_PICTURES_COUNT));
+  return randomPictureArray;
+};
 
 const DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -185,6 +201,6 @@ export const generatePoint = function () {
     'isFavorite': Boolean(getRandomInteger(0, 1)),
     'offers': checkedOffers,
     'type': newType.type,
-    'pictures': getUniqueRandomFromRandom(PICTURES_ARR, getRandomInteger(MIN_PICTURES_COUNT, MAX_PICTURES_COUNT)),
+    'pictures': getRandomPictureCount(),
   };
 };
