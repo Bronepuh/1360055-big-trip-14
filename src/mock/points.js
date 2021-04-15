@@ -8,21 +8,20 @@ const MIN_OFFERS_COUNT = 0;
 
 const MIN_PICTURES_COUNT = 1;
 const MAX_PICTURES_COUNT = 5;
-const MIN_PICTURES_URL_NUMBER = 1;
-const MAX_PICTURES_URL_NUMBER = 500;
+const MAX_PICTURES_URL_NUMBER = 50;
 
-const getPictureArray = function () {
-  return [
-    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
-    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
-    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
-    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
-    'http://picsum.photos/248/152?r=' + getRandomInteger(MIN_PICTURES_URL_NUMBER, MAX_PICTURES_URL_NUMBER),
-  ];
+const PICTURE_URL = 'http://picsum.photos/248/152?r=.jpg';
+
+const getPictureArray = function (count) {
+  const pictures = [];
+  for (let i = 0; i < count; i++) {
+    pictures.push(PICTURE_URL.replace(`?r=`, `?r=${i}`));
+  }
+  return pictures
 };
 
 const getRandomPictureCount = function () {
-  const pictureArray = getPictureArray();
+  const pictureArray = getPictureArray(MAX_PICTURES_URL_NUMBER);
   const randomPictureArray = getUniqueRandomFromRandom(pictureArray, getRandomInteger(MIN_PICTURES_COUNT, MAX_PICTURES_COUNT));
   return randomPictureArray;
 };

@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 const generatePicturesList = function (pictures) {
   let newPicturesList = '';
   for (let i = 0; i < pictures.length; i++) {
-    newPicturesList += `<img class="event__photo" src="${pictures[i]}.jpg" alt="Event photo">`;
+    newPicturesList += `<img class="event__photo" src="${pictures[i]}" alt="Event photo">`;
   }
   return newPicturesList;
 };
