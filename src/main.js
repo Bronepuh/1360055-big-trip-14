@@ -9,7 +9,7 @@ import { generatePoint } from './mock/points';
 import { POINTS_TYPES } from './mock/points';
 import { render, RenderPosition } from './utils';
 
-const POINTS_COUNT = 3;
+const POINTS_COUNT = 10;
 const points = new Array(POINTS_COUNT).fill().map(generatePoint);
 
 const siteMainElement = document.querySelector('.page-body');
@@ -32,7 +32,6 @@ const renderPoint = function (parentElement, point) {
   const eventPointComponent = new EventsPointView(point);
   const formEditComponent = new FormEditView(point, POINTS_TYPES);
   render(parentElement, eventPointComponent.getElement(), RenderPosition.BEFOREEND);
-  render(parentElement, formEditComponent.getElement(), RenderPosition.BEFOREEND);
 
   const replacePointToForm = () => {
     parentElement.replaceChild(formEditComponent.getElement(), eventPointComponent.getElement());
