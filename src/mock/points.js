@@ -15,7 +15,7 @@ const PICTURE_URL = 'http://picsum.photos/248/152?r=.jpg';
 const getPictureArray = function (count) {
   const pictures = [];
   for (let i = 0; i < count; i++) {
-    pictures.push(PICTURE_URL.replace('?r=', '?r=${i}'));
+    pictures.push(PICTURE_URL.replace('?r=', `?r=${i}`));
   }
   return pictures;
 };
