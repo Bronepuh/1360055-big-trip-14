@@ -1,9 +1,28 @@
-export const createEventsListTemplate = (hasPoints) => {
-  return hasPoints > 0 ? `<ul class="trip-events__list">
-  </ul>` :
-    `<ul class="trip-events__list">
-  </ul>
-    <p class="trip-events__msg">
-        Click New Event to create your first point
-    </p>`;
+import { createElement } from '../utils';
+
+const createEventsListTemplate = () => {
+  return `<ul class="trip-events__list">
+  </ul>`;
 };
+
+export default class EventsList {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventsListTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

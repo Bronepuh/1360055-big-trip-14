@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from '../utils';
 
 const getFormat = function (from, to) {
   const hours = to.diff(from, 'hours');
@@ -23,7 +24,7 @@ const getFavoriteTemplate = function (isFavorite) {
   }
 };
 
-export const createEventsPointTemplate = (point) => {
+const createEventsPointTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = point;
   const from = dayjs(dateFrom);
   const to = dayjs(dateTo);
@@ -69,3 +70,26 @@ export const createEventsPointTemplate = (point) => {
   </div>
 </li>`;
 };
+
+export default class EventsPoint {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventsPointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

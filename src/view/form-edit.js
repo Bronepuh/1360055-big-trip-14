@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from '../utils';
 
 // генерация картинок
 const generatePicturesList = function (pictures) {
@@ -43,8 +44,7 @@ const generateOffersList = function (pointTypes, type, offers) {
   return newOffersList;
 };
 
-export const createFormEditTemplate = (point, pointTypes) => {
-
+const createFormEditTemplate = (point, pointTypes) => {
   if (point) {
     const { basePrice, dateFrom, dateTo, destination, offers, type, pictures } = point;
     const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
@@ -175,6 +175,28 @@ export const createFormEditTemplate = (point, pointTypes) => {
   } else {
     return '';
   }
-
-
 };
+
+export default class FormEdit {
+  constructor(point, pointTypes) {
+    this._point = point;
+    this._pointTypes = pointTypes;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFormEditTemplate(this._point, this._pointTypes);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
