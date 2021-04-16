@@ -21,10 +21,10 @@ const eventMainElement = siteMainElement.querySelector('.trip-events');
 render(routeAndPrice, new RouteAndPriceView().getElement(), RenderPosition.AFTERBEGIN);
 render(siteMenu, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
 render(siteFilters, new SiteFiltersView().getElement(), RenderPosition.BEFOREEND);
-render(eventMainElement, new EventsFiltersView(points[0]).getElement(), RenderPosition.BEFOREEND);
+render(eventMainElement, new EventsFiltersView().getElement(), RenderPosition.BEFOREEND);
 
 // рисую список эвентов
-render(eventMainElement, new EventsListView(POINTS_COUNT).getElement(), RenderPosition.BEFOREEND);
+render(eventMainElement, new EventsListView().getElement(), RenderPosition.BEFOREEND);
 // нахожу этот список
 const eventList = siteMainElement.querySelector('.trip-events__list');
 
@@ -45,7 +45,8 @@ const renderPoint = function (parentElement, point) {
     replacePointToForm();
   });
 
-  formEditComponent.getElement().querySelector('form').addEventListener('submit', () => {
+  formEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
     replaceFormToPoint();
   });
 };
