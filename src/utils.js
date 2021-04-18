@@ -40,17 +40,17 @@ export const generateDate = () => {
 
 // рендер
 
-export const RenderPosition = {
+export const renderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
 };
 
 export const render = (container, element, place) => {
   switch (place) {
-    case RenderPosition.AFTERBEGIN:
+    case renderPosition.AFTERBEGIN:
       container.prepend(element);
       break;
-    case RenderPosition.BEFOREEND:
+    case renderPosition.BEFOREEND:
       container.append(element);
       break;
   }

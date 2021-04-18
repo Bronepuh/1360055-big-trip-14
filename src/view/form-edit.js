@@ -44,15 +44,36 @@ const generateOffersList = function (pointTypes, type, offers) {
   return newOffersList;
 };
 
-const createFormEditTemplate = (point, pointTypes) => {
-  if (point) {
-    const { basePrice, dateFrom, dateTo, destination, offers, type, pictures } = point;
-    const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
-    const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
-    const offersItems = generateOffersList(pointTypes, type, offers);
-    const eventPhotos = generatePicturesList(pictures);
+//генерация кнопок
+const canDelete = function (point) {
+  if (point.id !== undefined) {
+    return 'Delete';
+  } else {
+    return 'Cancel';
+  }
+};
 
-    return `<li class="trip-events__item">
+const canFold = function (point) {
+  if (point.id !== undefined) {
+    return `<button class="event__rollup-btn" type="button">
+    <span class="visually-hidden">Open event</span>
+    </button>`;
+  } else {
+    return '';
+  }
+};
+
+const createFormEditTemplate = (point, pointTypes) => {
+
+  const { basePrice, dateFrom, dateTo, destination, offers, type, pictures } = point;
+  const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
+  const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
+  const offersItems = generateOffersList(pointTypes, type, offers);
+  const eventPhotos = generatePicturesList(pictures);
+  const canDeleteButton = canDelete(point);
+  const canFoldButton = canFold(point);
+
+  return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
@@ -148,7 +169,8 @@ const createFormEditTemplate = (point, pointTypes) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__reset-btn" type="reset">${canDeleteButton}</button>
+          ${canFoldButton}
         </header>
         <section class="event__details">
           <section class="event__section  event__section--offers">
@@ -172,9 +194,6 @@ const createFormEditTemplate = (point, pointTypes) => {
         </section>
       </form>
     </li>`;
-  } else {
-    return '';
-  }
 };
 
 export default class FormEdit {
