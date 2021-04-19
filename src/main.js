@@ -8,9 +8,9 @@ import FormEditView from './view/form-edit';
 import EventsPointView from './view/event-point';
 import { generatePoint } from './mock/points';
 import { POINTS_TYPES } from './mock/points';
-import { render, renderPosition } from './utils';
+import { render, RenderPosition } from './utils';
 
-const POINTS_COUNT = 0;
+const POINTS_COUNT = 10;
 const points = new Array(POINTS_COUNT).fill().map(generatePoint);
 
 const siteMainElement = document.querySelector('.page-body');
@@ -19,18 +19,18 @@ const siteMenu = siteMainElement.querySelector('.trip-controls__navigation');
 const siteFilters = siteMainElement.querySelector('.trip-controls__filters');
 const eventMainElement = siteMainElement.querySelector('.trip-events');
 
-render(routeAndPrice, new RouteAndPriceView().getElement(), renderPosition.AFTERBEGIN);
-render(siteMenu, new SiteMenuView().getElement(), renderPosition.BEFOREEND);
-render(siteFilters, new SiteFiltersView().getElement(), renderPosition.BEFOREEND);
+render(routeAndPrice, new RouteAndPriceView().getElement(), RenderPosition.AFTERBEGIN);
+render(siteMenu, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
+render(siteFilters, new SiteFiltersView().getElement(), RenderPosition.BEFOREEND);
 
 if (points.length === 0) {
-  render(eventMainElement, new EventsListEmptyView().getElement(), renderPosition.BEFOREEND);
+  render(eventMainElement, new EventsListEmptyView().getElement(), RenderPosition.BEFOREEND);
 } else {
-  render(eventMainElement, new EventsFiltersView().getElement(), renderPosition.BEFOREEND);
+  render(eventMainElement, new EventsFiltersView().getElement(), RenderPosition.BEFOREEND);
 }
 
 // рисую список эвентов
-render(eventMainElement, new EventsListView().getElement(), renderPosition.BEFOREEND);
+render(eventMainElement, new EventsListView().getElement(), RenderPosition.BEFOREEND);
 // нахожу этот список
 const eventList = siteMainElement.querySelector('.trip-events__list');
 
@@ -38,7 +38,7 @@ const renderPoint = function (parentElement, point) {
   const eventPointComponent = new EventsPointView(point);
   const formEditComponent = new FormEditView(point, POINTS_TYPES);
 
-  render(parentElement, eventPointComponent.getElement(), renderPosition.BEFOREEND);
+  render(parentElement, eventPointComponent.getElement(), RenderPosition.BEFOREEND);
 
   const onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {

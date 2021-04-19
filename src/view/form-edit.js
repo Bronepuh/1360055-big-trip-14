@@ -46,7 +46,7 @@ const generateOffersList = function (pointTypes, type, offers) {
 
 //генерация кнопок
 const canDelete = function (point) {
-  if (point.id !== undefined) {
+  if (point.id) {
     return 'Delete';
   } else {
     return 'Cancel';
@@ -54,7 +54,7 @@ const canDelete = function (point) {
 };
 
 const canFold = function (point) {
-  if (point.id !== undefined) {
+  if (point.id) {
     return `<button class="event__rollup-btn" type="button">
     <span class="visually-hidden">Open event</span>
     </button>`;
