@@ -45,14 +45,16 @@ const generateOffersList = function (pointTypes, type, offers) {
 };
 
 const createFormEditTemplate = (point, pointTypes) => {
-  if (point) {
-    const { basePrice, dateFrom, dateTo, destination, offers, type, pictures } = point;
-    const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
-    const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
-    const offersItems = generateOffersList(pointTypes, type, offers);
-    const eventPhotos = generatePicturesList(pictures);
 
-    return `<li class="trip-events__item">
+  const { basePrice, dateFrom, dateTo, destination, offers, type, pictures } = point;
+  const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
+  const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
+  const offersItems = generateOffersList(pointTypes, type, offers);
+  const eventPhotos = generatePicturesList(pictures);
+  const canDelete = Boolean(point.id);
+  const canFold = Boolean(point.id);
+
+  return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
@@ -148,7 +150,10 @@ const createFormEditTemplate = (point, pointTypes) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__reset-btn" type="reset">${canDelete ? 'Delete' : 'Cancel'}</button>
+          ${canFold ? `<button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+          </button>` : ''}
         </header>
         <section class="event__details">
           <section class="event__section  event__section--offers">
@@ -172,9 +177,6 @@ const createFormEditTemplate = (point, pointTypes) => {
         </section>
       </form>
     </li>`;
-  } else {
-    return '';
-  }
 };
 
 export default class FormEdit {

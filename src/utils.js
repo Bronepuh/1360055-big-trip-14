@@ -39,7 +39,6 @@ export const generateDate = () => {
 };
 
 // рендер
-
 export const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
