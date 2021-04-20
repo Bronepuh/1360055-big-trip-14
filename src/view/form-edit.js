@@ -47,19 +47,17 @@ const generateOffersList = function (pointTypes, type, offers) {
 //генерация кнопок
 const canDelete = function (point) {
   if (point.id) {
-    return 'Delete';
+    return true;
   } else {
-    return 'Cancel';
+    return false;
   }
 };
 
 const canFold = function (point) {
   if (point.id) {
-    return `<button class="event__rollup-btn" type="button">
-    <span class="visually-hidden">Open event</span>
-    </button>`;
+    return true;
   } else {
-    return '';
+    return false;
   }
 };
 
@@ -169,8 +167,10 @@ const createFormEditTemplate = (point, pointTypes) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${canDeleteButton}</button>
-          ${canFoldButton}
+          <button class="event__reset-btn" type="reset">${canDeleteButton ? 'Delete' : 'Cancel'}</button>
+          ${canFoldButton ? `<button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+          </button>` : ''}
         </header>
         <section class="event__details">
           <section class="event__section  event__section--offers">
