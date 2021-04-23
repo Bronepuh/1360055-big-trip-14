@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../utils';
+import AbstractView from './abstract';
 
 const getFormat = function (from, to) {
   const hours = to.diff(from, 'hours');
@@ -71,25 +71,24 @@ const createEventsPointTemplate = (point) => {
 </li>`;
 };
 
-export default class EventsPoint {
+export default class EventsPoint extends AbstractView {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createEventsPointTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
   }
 
-  removeElement() {
-    this._element = null;
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
   }
 }

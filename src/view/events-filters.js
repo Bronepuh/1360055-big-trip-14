@@ -1,4 +1,4 @@
-import { createElement } from '../utils';
+import AbstractView from './abstract';
 
 const createEventsFiltersTemplate = () => {
   return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -29,24 +29,8 @@ const createEventsFiltersTemplate = () => {
 </form>`;
 };
 
-export default class EventsFilters {
-  constructor() {
-    this._element = null;
-  }
-
+export default class EventsFilters extends AbstractView {
   getTemplate() {
     return createEventsFiltersTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

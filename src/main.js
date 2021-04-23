@@ -8,7 +8,7 @@ import FormEditView from './view/form-edit';
 import EventsPointView from './view/event-point';
 import { generatePoint } from './mock/points';
 import { POINTS_TYPES } from './mock/points';
-import { render, RenderPosition } from './utils';
+import { render, RenderPosition, replace } from './utils/render';
 
 const POINTS_COUNT = 10;
 const points = new Array(POINTS_COUNT).fill().map(generatePoint);
@@ -19,18 +19,18 @@ const siteMenu = siteMainElement.querySelector('.trip-controls__navigation');
 const siteFilters = siteMainElement.querySelector('.trip-controls__filters');
 const eventMainElement = siteMainElement.querySelector('.trip-events');
 
-render(routeAndPrice, new RouteAndPriceView().getElement(), RenderPosition.AFTERBEGIN);
-render(siteMenu, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
-render(siteFilters, new SiteFiltersView().getElement(), RenderPosition.BEFOREEND);
+render(routeAndPrice, new RouteAndPriceView(), RenderPosition.AFTERBEGIN);
+render(siteMenu, new SiteMenuView(), RenderPosition.BEFOREEND);
+render(siteFilters, new SiteFiltersView(), RenderPosition.BEFOREEND);
 
 if (points.length === 0) {
-  render(eventMainElement, new EventsListEmptyView().getElement(), RenderPosition.BEFOREEND);
+  render(eventMainElement, new EventsListEmptyView(), RenderPosition.BEFOREEND);
 } else {
-  render(eventMainElement, new EventsFiltersView().getElement(), RenderPosition.BEFOREEND);
+  render(eventMainElement, new EventsFiltersView(), RenderPosition.BEFOREEND);
 }
 
 // рисую список эвентов
-render(eventMainElement, new EventsListView().getElement(), RenderPosition.BEFOREEND);
+render(eventMainElement, new EventsListView(), RenderPosition.BEFOREEND);
 // нахожу этот список
 const eventList = siteMainElement.querySelector('.trip-events__list');
 
@@ -38,7 +38,7 @@ const renderPoint = function (parentElement, point) {
   const eventPointComponent = new EventsPointView(point);
   const formEditComponent = new FormEditView(point, POINTS_TYPES);
 
-  render(parentElement, eventPointComponent.getElement(), RenderPosition.BEFOREEND);
+  render(parentElement, eventPointComponent, RenderPosition.BEFOREEND);
 
   const onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
@@ -49,28 +49,24 @@ const renderPoint = function (parentElement, point) {
   };
 
   const replacePointToForm = () => {
-    parentElement.replaceChild(formEditComponent.getElement(), eventPointComponent.getElement());
+    replace(formEditComponent, eventPointComponent);
     document.addEventListener('keydown', onEscKeyDown);
   };
 
   const replaceFormToPoint = () => {
-    parentElement.replaceChild(eventPointComponent.getElement(), formEditComponent.getElement());
+    replace(eventPointComponent, formEditComponent);
     document.removeEventListener('keydown', onEscKeyDown);
   };
 
-  const pointRollupButton = eventPointComponent.getElement().querySelector('.event__rollup-btn');
-  pointRollupButton.addEventListener('click', () => {
+  eventPointComponent.setClickHandler(() => {
     replacePointToForm();
   });
 
-  const formRollupButton = formEditComponent.getElement().querySelector('.event__rollup-btn');
-  formRollupButton.addEventListener('click', () => {
+  formEditComponent.setClickHandler(() => {
     replaceFormToPoint();
   });
 
-  const form = formEditComponent.getElement().querySelector('form');
-  form.addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  formEditComponent.setFormSubmitHandler(() => {
     replaceFormToPoint();
   });
 };
