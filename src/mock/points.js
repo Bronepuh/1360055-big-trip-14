@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { getRandomInteger, getUniqueRandomFromRandom, generateDate } from '../utils';
+import { getRandomInteger, getUniqueRandomFromRandom, generateDate } from '../utils/common';
 
 const MIN_DESCRIPTIONS_COUNT = 1;
 const MAX_DESCRIPTIONS_COUNT = 5;

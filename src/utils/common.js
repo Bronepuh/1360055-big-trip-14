@@ -39,29 +39,44 @@ export const generateDate = () => {
 };
 
 // рендер
-export const RenderPosition = {
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
-};
+// export const RenderPosition = {
+//   AFTERBEGIN: 'afterbegin',
+//   BEFOREEND: 'beforeend',
+// };
 
-export const render = (container, element, place) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
+// export const render = (container, element, place) => {
+//   switch (place) {
+//     case RenderPosition.AFTERBEGIN:
+//       container.prepend(element);
+//       break;
+//     case RenderPosition.BEFOREEND:
+//       container.append(element);
+//       break;
+//   }
+// };
+
+// export const renderTemplate = (container, template, place) => {
+//   container.insertAdjacentHTML(place, template);
+// };
+
+// export const createElement = (template) => {
+//   const newElement = document.createElement('div');
+//   newElement.innerHTML = template;
+
+//   return newElement.firstChild;
+// };
+
+// обновление точки маршрута
+export const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
   }
-};
 
-export const renderTemplate = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
-
-export const createElement = (template) => {
-  const newElement = document.createElement('div');
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
 };
