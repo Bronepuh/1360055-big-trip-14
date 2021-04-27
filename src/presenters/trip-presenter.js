@@ -9,14 +9,15 @@ import { updateItem } from '../utils/common.js';
 import { render, RenderPosition } from '../utils/render';
 
 export default class TripPresenter {
-  constructor() {
+  constructor(tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer) {
 
     this._pointPresenter = {};
 
-    this._tripMainContainer = document.querySelector('.trip-main');
-    this._siteMenuContainer = document.querySelector('.trip-controls__navigation');
-    this._siteFiltersContainer = document.querySelector('.trip-controls__filters');
-    this._eventMainContainer = document.querySelector('.trip-events');
+    this._tripMainContainer = tripMainContainer;
+    this._siteMenuContainer = siteMenuContainer;
+    this._siteFiltersContainer = siteFiltersContainer;
+    this._eventMainContainer = eventMainContainer;
+
 
     this._routeAndPriceViewComponent = new RouteAndPriceView();
     this._siteMenuViewComponent = new SiteMenuView();
