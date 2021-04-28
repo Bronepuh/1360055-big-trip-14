@@ -184,7 +184,8 @@ export default class FormEdit extends AbstractView {
     super();
     this._point = point;
     this._pointTypes = pointTypes;
-    this._clickHandler = this._clickHandler.bind(this);
+
+    this._formClickHandler = this._formClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
@@ -192,14 +193,14 @@ export default class FormEdit extends AbstractView {
     return createFormEditTemplate(this._point, this._pointTypes);
   }
 
-  _clickHandler(evt) {
+  _formClickHandler(evt) {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.formClick();
   }
 
-  setClickHandler(callback) {
-    this._callback.click = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
+  setFormClickHandler(callback) {
+    this._callback.formClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
   }
 
   _formSubmitHandler(evt) {
