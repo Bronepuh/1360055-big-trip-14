@@ -52,3 +52,41 @@ export const updateItem = (items, update) => {
     ...items.slice(index + 1),
   ];
 };
+
+// Функция помещает задачи без даты в конце списка,
+// возвращая нужный вес для колбэка sort
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+export const sortPointUp = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+
+  if (weight !== null) {
+    return weight;
+  }
+
+  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+};
+
+export const sortPointDown = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+
+  if (weight !== null) {
+    return weight;
+  }
+
+  return dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
+};
