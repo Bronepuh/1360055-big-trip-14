@@ -8,7 +8,7 @@ import PointPresenter from './point-presenter';
 import { updateItem } from '../utils/common.js';
 import { render, RenderPosition } from '../utils/render';
 import { SortType } from '../utils/const';
-import {sortPointUp, sortPointDown} from '../utils/common';
+import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/common';
 
 
 export default class TripPresenter {
@@ -42,7 +42,6 @@ export default class TripPresenter {
     render(this._tripMainContainer, this._routeAndPriceViewComponent, RenderPosition.AFTERBEGIN);
     render(this._siteMenuContainer, this._siteMenuViewComponent, RenderPosition.BEFOREEND);
     render(this._siteFiltersContainer, this._siteFiltersViewComponent, RenderPosition.BEFOREEND);
-    this._siteFiltersViewComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
 
     this._renderTrip();
   }
@@ -77,11 +76,14 @@ export default class TripPresenter {
     // потому что для сортировки мы будем мутировать
     // массив в свойстве _boardTasks
     switch (sortType) {
-      case SortType.DATE_UP:
-        this._points.sort(sortPointUp);
+      case SortType.DAY:
+        this._points.sort(sortPointDay);
         break;
-      case SortType.DATE_DOWN:
-        this._points.sort(sortPointDown);
+      case SortType.TIME:
+        this._points.sort(sortPointTime);
+        break;
+      case SortType.PRICE:
+        this._points.sort(sortPointPrice);
         break;
       default:
         // 3. А когда пользователь захочет "вернуть всё, как было",
@@ -94,6 +96,9 @@ export default class TripPresenter {
 
   _renderEventList() {
     render(this._eventMainContainer, this._eventsFiltersViewComponent, RenderPosition.AFTERBEGIN);
+
+    this._eventsFiltersViewComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+
     render(this._eventMainContainer, this._eventsListViewComponent, RenderPosition.BEFOREEND);
   }
 
