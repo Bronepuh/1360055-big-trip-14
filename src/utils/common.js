@@ -60,12 +60,12 @@ export const sortPointDay = (pointA, pointB) => {
 export const sortPointTime = (pointA, pointB) => {
 
   const fromA = dayjs(pointA.dateFrom);
-  const ToA = dayjs(pointA.dateTo);
-  const diffA = ToA.diff(fromA, 'minutes');
+  const toA = dayjs(pointA.dateTo);
+  const diffA = toA.diff(fromA, 'minutes');
 
   const fromB = dayjs(pointB.dateFrom);
-  const ToB = dayjs(pointB.dateTo);
-  const diffB = ToB.diff(fromB, 'minutes');
+  const toB = dayjs(pointB.dateTo);
+  const diffB = toB.diff(fromB, 'minutes');
 
   return dayjs(diffA).diff(dayjs(diffB));
 };

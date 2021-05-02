@@ -15,7 +15,7 @@ export default class TripPresenter {
   constructor(tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer) {
 
     this._pointPresenter = {};
-    this._currentSortType = SortType.DEFAULT;
+    this._currentSortType = SortType.DAY;
 
     this._tripMainContainer = tripMainContainer;
     this._siteMenuContainer = siteMenuContainer;
