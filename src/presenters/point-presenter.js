@@ -1,6 +1,6 @@
 import FormEditView from '../view/form-edit';
 import EventsPointView from '../view/events-point';
-import { POINTS_TYPES } from '../mock/points';
+import { POINTS_TYPES, CITYS_TYPES } from '../mock/points';
 import { render, RenderPosition, replace, remove } from '../utils/render';
 
 const Mode = {
@@ -23,6 +23,7 @@ export default class PointPresenter {
     this._handleFormClick = this._handleFormClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleTypePointClick = this._handleTypePointClick.bind(this);
   }
 
   init(point) {
@@ -32,7 +33,7 @@ export default class PointPresenter {
     const prevFormEditComponent = this._formEditComponent;
 
     this._eventPointComponent = new EventsPointView(this._point);
-    this._formEditComponent = new FormEditView(this._point, POINTS_TYPES);
+    this._formEditComponent = new FormEditView(POINTS_TYPES, this._point, CITYS_TYPES);
 
     this._eventPointComponent.setPointClickHandler(this._handlePointClick);
 
@@ -40,6 +41,8 @@ export default class PointPresenter {
 
     this._formEditComponent.setFormClickHandler(this._handleFormClick);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);
+    this._formEditComponent.setTypeCityChangeHandler(this._handleTypeCityClick);
 
     if (prevEventPointComponent === null || prevFormEditComponent === null) {
       render(this._eventList, this._eventPointComponent, RenderPosition.BEFOREEND);
@@ -113,5 +116,11 @@ export default class PointPresenter {
         },
       ),
     );
+  }
+
+  _handleTypePointClick() {
+  }
+
+  _handleTypeCityClick() {
   }
 }

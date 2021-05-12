@@ -1,30 +1,34 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract';
-
-// генерация картинок
-const generatePicturesList = function (pictures) {
-  let newPicturesList = '';
-  for (let i = 0; i < pictures.length; i++) {
-    newPicturesList += `<img class="event__photo" src="${pictures[i]}" alt="Event photo">`;
-  }
-  return newPicturesList;
-};
+import SmartView from './smart';
 
 // генерация дополнительных опций
-const getCurrentType = function (pointTypes, type) {
-  for (let i = 0; i < pointTypes.length; i++) {
-    if (pointTypes[i].type === type) {
+const getCurrentType = function (pointsTypes, type) {
+  for (let i = 0; i < pointsTypes.length; i++) {
+    if (pointsTypes[i].type === type) {
       const currentType = {
         type: type,
-        offers: pointTypes[i].offers,
+        offers: pointsTypes[i].offers,
       };
       return currentType;
     }
   }
 };
 
-const generateOffersList = function (pointTypes, type, offers) {
-  const currentType = getCurrentType(pointTypes, type);
+const getCurrentCity = function (citisTypes, city) {
+  for (let i = 0; i < citisTypes.length; i++) {
+    if (citisTypes[i].city === city) {
+      const currentCity = {
+        city: city,
+        destination: citisTypes[i].destination,
+        pictures: citisTypes[i].pictures,
+      };
+      return currentCity;
+    }
+  }
+};
+
+const generateOffersList = function (pointsTypes, type, offers) {
+  const currentType = getCurrentType(pointsTypes, type);
   const newOffers = currentType.offers;
   const checkedOffers = offers;
   let newOffersList = '';
@@ -44,15 +48,47 @@ const generateOffersList = function (pointTypes, type, offers) {
   return newOffersList;
 };
 
-const createFormEditTemplate = (point, pointTypes) => {
+const generateTypeList = function (pointsTypes, state) {
+  let newTypesList = '';
+  for (let i = 0; i < pointsTypes.length; i++) {
+    const type = pointsTypes[i];
+    const isChecked = type.type === state.currentType.type;
+    newTypesList += `<div class="event__type-item">
+        <input id="event-type-${type.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.type}" ${isChecked ? 'checked' : ''}>
+        <label class="event__type-label  event__type-label--${type.type}" for="event-type-${type.type}-1">${type.type}</label>
+      </div>`;
+  }
+  return newTypesList;
+};
 
-  const { basePrice, dateFrom, dateTo, destination, offers, type, pictures } = point;
+// генерация городов
+const generateCitysList = function (currentCity) {
+  return `<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentCity.city}" list="destination-list-1"><datalist id="destination-list-1">`;
+};
+
+
+// генерация картинок
+const generatePicturesList = function (currentCity) {
+  let newPicturesList = '';
+  for (let i = 0; i < currentCity.pictures.length; i++) {
+    newPicturesList += `<img class="event__photo" src="${currentCity.pictures[i]}" alt="Event photo">`;
+  }
+  return newPicturesList;
+};
+
+
+const createFormEditTemplate = (pointsTypes, state) => {
+
+  const { basePrice, dateFrom, dateTo, offers, type, currentCity } = state;
   const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
   const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
-  const offersItems = generateOffersList(pointTypes, type, offers);
-  const eventPhotos = generatePicturesList(pictures);
-  const canDelete = Boolean(point.id);
-  const canFold = Boolean(point.id);
+  const offersItems = generateOffersList(pointsTypes, type, offers);
+  const itemTypes = generateTypeList(pointsTypes, state);
+  const eventPhotos = generatePicturesList(currentCity);
+  const canDelete = Boolean(state.id);
+  const canFold = Boolean(state.id);
+
+  const city = generateCitysList(currentCity);
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -68,55 +104,8 @@ const createFormEditTemplate = (point, pointTypes) => {
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
 
-                <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                </div>
+                ${itemTypes}
 
-                <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                  <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                  <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                  <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                  <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                  <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                  <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                </div>
               </fieldset>
             </div>
           </div>
@@ -125,8 +114,9 @@ const createFormEditTemplate = (point, pointTypes) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               Flight
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
-            <datalist id="destination-list-1">
+
+              ${city}
+
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
               <option value="Chamonix"></option>
@@ -166,7 +156,7 @@ const createFormEditTemplate = (point, pointTypes) => {
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${destination}</p>
+            <p class="event__destination-description">${currentCity.destination}</p>
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
@@ -179,18 +169,76 @@ const createFormEditTemplate = (point, pointTypes) => {
     </li>`;
 };
 
-export default class FormEdit extends AbstractView {
-  constructor(point, pointTypes) {
+export default class FormEdit extends SmartView {
+
+  static parsePointToState(pointsTypes, point, citysTypes) {
+    return Object.assign(
+      {},
+      point,
+      {
+        currentType: getCurrentType(pointsTypes, point.type),
+        currentCity: getCurrentCity(citysTypes, point.city),
+      },
+    );
+  }
+
+  static parseStateToPoint(state) {
+    state = Object.assign({}, state);
+    delete state.checkedType;
+    return state;
+  }
+
+  constructor(pointsTypes, point, citysTypes) {
     super();
     this._point = point;
-    this._pointTypes = pointTypes;
+    this._pointsTypes = pointsTypes;
+    this._citysTypes = citysTypes;
+
+    this._state = FormEdit.parsePointToState(pointsTypes, point, citysTypes);
 
     this._formClickHandler = this._formClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._typePointChangeHandler = this._typePointChangeHandler.bind(this);
+    this._typeCityChangeHandler = this._typeCityChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createFormEditTemplate(this._point, this._pointTypes);
+    return createFormEditTemplate(this._pointsTypes, this._state, this._citysTypes);
+  }
+
+
+  _typePointChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.typePointChange(evt.target.value);
+
+    const update = {
+      type: evt.target.value,
+      currentType: getCurrentType(this._pointsTypes, evt.target.value),
+    };
+
+    this.updateState(update);
+  }
+
+  setTypePointChangeHandler(callback) {
+    this._callback.typePointChange = callback;
+    this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
+  }
+
+  _typeCityChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.typeCityChange(evt.target.value);
+
+    const update = {
+      city: evt.target.value,
+      currentCity: getCurrentCity(this._citysTypes, evt.target.value),
+    };
+
+    this.updateState(update);
+  }
+
+  setTypeCityChangeHandler(callback) {
+    this._callback.typeCityChange = callback;
+    this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
   }
 
   _formClickHandler(evt) {
@@ -211,5 +259,16 @@ export default class FormEdit extends AbstractView {
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+    this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
   }
 }
