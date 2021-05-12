@@ -183,8 +183,17 @@ export default class FormEdit extends SmartView {
   }
 
   static parseStateToPoint(state) {
-    state = Object.assign({}, state);
-    delete state.checkedType;
+    state = Object.assign(
+      {
+        type: state.currentType.type,
+        city: state.currentCity.city,
+        destination: state.currentCity.destination,
+        pictures: state.currentCity.pictures,
+      },
+      state,
+    );
+    delete state.currentType;
+    delete state.currentCity;
     return state;
   }
 
@@ -206,22 +215,32 @@ export default class FormEdit extends SmartView {
     return createFormEditTemplate(this._pointsTypes, this._state, this._citysTypes);
   }
 
-
-  _typePointChangeHandler(evt) {
-    evt.preventDefault();
-    this._callback.typePointChange(evt.target.value);
-
+  setType(type) {
     const update = {
-      type: evt.target.value,
-      currentType: getCurrentType(this._pointsTypes, evt.target.value),
+      type: type,
+      currentType: getCurrentType(this._pointsTypes, type),
     };
 
     this.updateState(update);
   }
 
+  _typePointChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.typePointChange(evt.target.value);
+  }
+
   setTypePointChangeHandler(callback) {
     this._callback.typePointChange = callback;
     this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
+  }
+
+  setCity(city) {
+    const update = {
+      city: city,
+      currentCity: getCurrentCity(this._citysTypes, city),
+    };
+
+    this.updateState(update);
   }
 
   _typeCityChangeHandler(evt) {

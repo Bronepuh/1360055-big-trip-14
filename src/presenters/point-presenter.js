@@ -24,6 +24,7 @@ export default class PointPresenter {
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleTypePointClick = this._handleTypePointClick.bind(this);
+    this._handleTypeCityClick = this._handleTypeCityClick.bind(this);
   }
 
   init(point) {
@@ -36,7 +37,6 @@ export default class PointPresenter {
     this._formEditComponent = new FormEditView(POINTS_TYPES, this._point, CITYS_TYPES);
 
     this._eventPointComponent.setPointClickHandler(this._handlePointClick);
-
     this._eventPointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     this._formEditComponent.setFormClickHandler(this._handleFormClick);
@@ -118,9 +118,11 @@ export default class PointPresenter {
     );
   }
 
-  _handleTypePointClick() {
+  _handleTypePointClick(type) {
+    this._formEditComponent.setType(type);
   }
 
-  _handleTypeCityClick() {
+  _handleTypeCityClick(city) {
+    this._formEditComponent.setCity(city);
   }
 }
