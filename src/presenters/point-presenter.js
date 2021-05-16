@@ -1,6 +1,6 @@
 import FormEditView from '../view/form-edit';
 import EventsPointView from '../view/events-point';
-import { POINTS_TYPES, CITYS_TYPES } from '../mock/points';
+import { POINTS_TYPES, DESTINATION } from '../mock/points';
 import { render, RenderPosition, replace, remove } from '../utils/render';
 
 const Mode = {
@@ -34,7 +34,7 @@ export default class PointPresenter {
     const prevFormEditComponent = this._formEditComponent;
 
     this._eventPointComponent = new EventsPointView(this._point);
-    this._formEditComponent = new FormEditView(POINTS_TYPES, this._point, CITYS_TYPES);
+    this._formEditComponent = new FormEditView(POINTS_TYPES, this._point, DESTINATION);
 
     this._eventPointComponent.setPointClickHandler(this._handlePointClick);
     this._eventPointComponent.setFavoriteClickHandler(this._handleFavoriteClick);

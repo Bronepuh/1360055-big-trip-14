@@ -14,15 +14,15 @@ const getCurrentType = function (pointsTypes, type) {
   }
 };
 
-const getCurrentCity = function (citisTypes, city) {
-  for (let i = 0; i < citisTypes.length; i++) {
-    if (citisTypes[i].city === city) {
-      const currentCity = {
+const getCurrentDestination = function (destination, city) {
+  for (let i = 0; i < destination.length; i++) {
+    if (destination[i].city === city) {
+      const currentDestination = {
         city: city,
-        destination: citisTypes[i].destination,
-        pictures: citisTypes[i].pictures,
+        description: destination[i].description,
+        pictures: destination[i].pictures,
       };
-      return currentCity;
+      return currentDestination;
     }
   }
 };
@@ -62,16 +62,16 @@ const generateTypeList = function (pointsTypes, state) {
 };
 
 // генерация городов
-const generateCitysList = function (currentCity) {
-  return `<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentCity.city}" list="destination-list-1"><datalist id="destination-list-1">`;
+const generateCitysList = function (destination) {
+  return `<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.city}" list="destination-list-1"><datalist id="destination-list-1">`;
 };
 
 
 // генерация картинок
-const generatePicturesList = function (currentCity) {
+const generatePicturesList = function (destination) {
   let newPicturesList = '';
-  for (let i = 0; i < currentCity.pictures.length; i++) {
-    newPicturesList += `<img class="event__photo" src="${currentCity.pictures[i]}" alt="Event photo">`;
+  for (let i = 0; i < destination.pictures.length; i++) {
+    newPicturesList += `<img class="event__photo" src="${destination.pictures[i]}" alt="Event photo">`;
   }
   return newPicturesList;
 };
@@ -79,16 +79,16 @@ const generatePicturesList = function (currentCity) {
 
 const createFormEditTemplate = (pointsTypes, state) => {
 
-  const { basePrice, dateFrom, dateTo, offers, type, currentCity } = state;
+  const { basePrice, dateFrom, dateTo, offers, type, destination } = state;
   const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
   const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
   const offersItems = generateOffersList(pointsTypes, type, offers);
   const itemTypes = generateTypeList(pointsTypes, state);
-  const eventPhotos = generatePicturesList(currentCity);
+  const eventPhotos = generatePicturesList(destination);
   const canDelete = Boolean(state.id);
   const canFold = Boolean(state.id);
 
-  const city = generateCitysList(currentCity);
+  const city = generateCitysList(destination);
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -156,7 +156,7 @@ const createFormEditTemplate = (pointsTypes, state) => {
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${currentCity.destination}</p>
+            <p class="event__destination-description">${destination.description}</p>
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
@@ -171,13 +171,13 @@ const createFormEditTemplate = (pointsTypes, state) => {
 
 export default class FormEdit extends SmartView {
 
-  static parsePointToState(pointsTypes, point, citysTypes) {
+  static parsePointToState(pointsTypes, point, destination) {
     return Object.assign(
       {},
       point,
       {
         currentType: getCurrentType(pointsTypes, point.type),
-        currentCity: getCurrentCity(citysTypes, point.city),
+        currentDestination: getCurrentDestination(destination, point.city),
       },
     );
   }
@@ -186,24 +186,24 @@ export default class FormEdit extends SmartView {
     state = Object.assign(
       {
         type: state.currentType.type,
-        city: state.currentCity.city,
-        destination: state.currentCity.destination,
-        pictures: state.currentCity.pictures,
+        city: state.destination.city,
+        destination: state.destination.description,
+        pictures: state.destination.pictures,
       },
       state,
     );
     delete state.currentType;
-    delete state.currentCity;
+    delete state.destination;
     return state;
   }
 
-  constructor(pointsTypes, point, citysTypes) {
+  constructor(pointsTypes, point, destination) {
     super();
     this._point = point;
     this._pointsTypes = pointsTypes;
-    this._citysTypes = citysTypes;
+    this._destination = destination;
 
-    this._state = FormEdit.parsePointToState(pointsTypes, point, citysTypes);
+    this._state = FormEdit.parsePointToState(pointsTypes, point, destination);
 
     this._formClickHandler = this._formClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -212,7 +212,7 @@ export default class FormEdit extends SmartView {
   }
 
   getTemplate() {
-    return createFormEditTemplate(this._pointsTypes, this._state, this._citysTypes);
+    return createFormEditTemplate(this._pointsTypes, this._state, this._destination);
   }
 
   setType(type) {
@@ -237,7 +237,7 @@ export default class FormEdit extends SmartView {
   setCity(city) {
     const update = {
       city: city,
-      currentCity: getCurrentCity(this._citysTypes, city),
+      destination: getCurrentDestination(this._destination, city),
     };
 
     this.updateState(update);
@@ -249,7 +249,7 @@ export default class FormEdit extends SmartView {
 
     const update = {
       city: evt.target.value,
-      currentCity: getCurrentCity(this._citysTypes, evt.target.value),
+      destination: getCurrentDestination(this._destination, evt.target.value),
     };
 
     this.updateState(update);

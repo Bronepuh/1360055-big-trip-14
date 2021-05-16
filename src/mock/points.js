@@ -39,21 +39,21 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-export const CITYS_TYPES = [
+export const DESTINATION = [
   {
     city: 'Amsterdam',
     pictures: getRandomPictureCount(),
-    destination: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
+    description: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
   },
   {
     city: 'Geneva',
     pictures: getRandomPictureCount(),
-    destination: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
+    description: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
   },
   {
     city: 'Chamonix',
     pictures: getRandomPictureCount(),
-    destination: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
+    description: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
   },
 ];
 
@@ -208,7 +208,7 @@ export const POINTS_TYPES = [
 export const generatePoint = function () {
   const newType = POINTS_TYPES[getRandomInteger(0, POINTS_TYPES.length - 1)];
   const checkedOffers = getUniqueRandomFromRandom(newType.offers, getRandomInteger(MIN_OFFERS_COUNT, newType.offers.length));
-  const newCity = CITYS_TYPES[getRandomInteger(0, CITYS_TYPES.length - 1)];
+  const newDestination = DESTINATION[getRandomInteger(0, DESTINATION.length - 1)];
 
   return {
     'basePrice': getRandomInteger(550, 1200),
@@ -218,8 +218,11 @@ export const generatePoint = function () {
     'isFavorite': Boolean(getRandomInteger(0, 1)),
     'offers': checkedOffers,
     'type': newType.type,
-    'city': newCity.city,
-    'destination': newCity.destination,
-    'pictures': newCity.pictures,
+    'destination':
+    {
+      'city': newDestination.city,
+      'pictures': newDestination.pictures,
+      'description': newDestination.destination,
+    },
   };
 };
