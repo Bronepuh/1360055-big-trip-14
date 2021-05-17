@@ -39,6 +39,24 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
+export const DESTINATION = [
+  {
+    city: 'Amsterdam',
+    pictures: getRandomPictureCount(),
+    description: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
+  },
+  {
+    city: 'Geneva',
+    pictures: getRandomPictureCount(),
+    description: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
+  },
+  {
+    city: 'Chamonix',
+    pictures: getRandomPictureCount(),
+    description: getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
+  },
+];
+
 export const POINTS_TYPES = [
   {
     'type': 'taxi',
@@ -190,16 +208,21 @@ export const POINTS_TYPES = [
 export const generatePoint = function () {
   const newType = POINTS_TYPES[getRandomInteger(0, POINTS_TYPES.length - 1)];
   const checkedOffers = getUniqueRandomFromRandom(newType.offers, getRandomInteger(MIN_OFFERS_COUNT, newType.offers.length));
+  const newDestination = DESTINATION[getRandomInteger(0, DESTINATION.length - 1)];
 
   return {
     'basePrice': getRandomInteger(550, 1200),
     'dateFrom': generateDate(),
     'dateTo': generateDate(),
-    'destination': getUniqueRandomFromRandom(DESCRIPTIONS, getRandomInteger(MIN_DESCRIPTIONS_COUNT, MAX_DESCRIPTIONS_COUNT)).join(' '),
     'id': nanoid(),
     'isFavorite': Boolean(getRandomInteger(0, 1)),
     'offers': checkedOffers,
     'type': newType.type,
-    'pictures': getRandomPictureCount(),
+    'destination':
+    {
+      'city': newDestination.city,
+      'pictures': newDestination.pictures,
+      'description': newDestination.destination,
+    },
   };
 };
