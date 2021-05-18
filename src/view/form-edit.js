@@ -206,7 +206,8 @@ export default class FormEdit extends SmartView {
     this._destination = destination;
 
     this._state = FormEdit.parsePointToState(pointsTypes, point, destination);
-    this._datepicker = null;
+    this._dateFromPicker = null;
+    this._dateToPicker = null;
 
     this._formClickHandler = this._formClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
