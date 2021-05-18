@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import SmartView from './smart';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 // генерация дополнительных опций
 const getCurrentType = function (pointsTypes, type) {
@@ -204,15 +206,83 @@ export default class FormEdit extends SmartView {
     this._destination = destination;
 
     this._state = FormEdit.parsePointToState(pointsTypes, point, destination);
+    this._dateFromPicker = null;
+    this._dateToPicker = null;
 
     this._formClickHandler = this._formClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._typePointChangeHandler = this._typePointChangeHandler.bind(this);
     this._typeCityChangeHandler = this._typeCityChangeHandler.bind(this);
+    this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
+    this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
+
+    this._setDateFromChangePicker();
+    this._setDateToChangePicker();
   }
 
   getTemplate() {
     return createFormEditTemplate(this._pointsTypes, this._state, this._destination);
+  }
+
+  _setDateFromChangePicker() {
+    if (this._dateFromPicker) {
+      this._dateFromPicker.destroy();
+      this._dateFromPicker = null;
+    }
+
+    this._dateFromPicker = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        time_24hr: true,
+        enableTime: true,
+        minDate: 'today',
+        defaultDate: new Date(this._state.dateFrom),
+        onChange: this._dateFromChangeHandler,
+      },
+    );
+  }
+
+  _dateFromChangeHandler([dateFrom]) {
+    this.updateState({
+      dateFrom: dateFrom,
+    }, false);
+    if(this._state.dateFrom > this._state.dateTo) {
+      this.updateState({
+        dateTo: dateFrom,
+      }, false);
+
+      this._dateToPicker.setDate(new Date(this._state.dateFrom));
+    }
+    this._dateToPicker.set('minDate', new Date(this._state.dateFrom));
+  }
+
+  _setDateToChangePicker() {
+    if (this._dateToPicker) {
+      this._dateToPicker.destroy();
+      this._dateToPicker = null;
+    }
+
+    this._dateToPicker = flatpickr(
+      this.getElement().querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        time_24hr: true,
+        enableTime: true,
+
+        defaultDate: new Date(this._state.dateTo),
+        minDate: new Date(this._state.dateFrom),
+
+        onChange: this._dateToChangeHandler,
+      },
+    );
+  }
+
+  _dateToChangeHandler([dateTo]) {
+    this.updateState({
+      dateTo: dateTo,
+    }, false);
+    this._dateFromPicker.set('maxDate', new Date(this._state.dateTo));
   }
 
   setType(type) {
@@ -289,5 +359,7 @@ export default class FormEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDateFromChangePicker();
+    this._setDateToChangePicker();
   }
 }
