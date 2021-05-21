@@ -48,7 +48,7 @@ export default class NewPointPresenter {
     this._handlePriceChange = this._handlePriceChange.bind(this);
     this._handleTypePointClick = this._handleTypePointClick.bind(this);
     this._handleTypeCityClick = this._handleTypeCityClick.bind(this);
-    this._handlePointDelete = this._handlePointDelete.bind(this);
+    this._handleNewPointDelete = this._handleNewPointDelete.bind(this);
     this._handleOffersChange = this._handleOffersChange.bind(this);
   }
 
@@ -59,7 +59,7 @@ export default class NewPointPresenter {
     this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
     this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);
     this._formEditComponent.setTypeCityChangeHandler(this._handleTypeCityClick);
-    this._formEditComponent.setPointDeleteHandler(this._handlePointDelete);
+    this._formEditComponent.setNewPointDeleteHandler(this._handleNewPointDelete);
     this._formEditComponent.setOffersChangeHandler(this._handleOffersChange);
 
     render(this._eventList, this._formEditComponent, RenderPosition.AFTERBEGIN);
@@ -101,11 +101,7 @@ export default class NewPointPresenter {
     );
   }
 
-  _handlePointDelete() {
-    this._changeData(
-      UserAction.DELETE_POINT,
-      UpdateType.MINOR,
-      this._point,
-    );
+  _handleNewPointDelete() {
+    this.destroy();
   }
 }

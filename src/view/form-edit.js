@@ -212,6 +212,7 @@ export default class FormEdit extends SmartView {
     this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
     this._pointDeleteHandler = this._pointDeleteHandler.bind(this);
+    this._newPointDeleteHandler = this._newPointDeleteHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setDateFromChangePicker();
@@ -408,6 +409,16 @@ export default class FormEdit extends SmartView {
   setPointDeleteHandler(callback) {
     this._callback.pointDelete = callback;
     this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
+  }
+
+  // удаление несохраненной новой точки маршрута
+  _newPointDeleteHandler() {
+    this._callback.newPointDelete();
+  }
+
+  setNewPointDeleteHandler(callback) {
+    this._callback.newPointDelete = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
   }
 
   // установка внутренних обработчиков и их восстановление
