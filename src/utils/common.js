@@ -38,21 +38,6 @@ export const generateDate = () => {
   return dayjs().add(startTime, 'minute').toDate();
 };
 
-// обновление точки маршрута
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 export const sortPointDay = (pointA, pointB) => {
   return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 };

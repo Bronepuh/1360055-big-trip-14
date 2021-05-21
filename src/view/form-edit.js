@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import SmartView from './smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import { UserAction, UpdateType } from '../utils/const';
 
 // генерация дополнительных опций
 const getCurrentType = function (pointsTypes, type) {
@@ -39,8 +40,8 @@ const generateOffersList = function (pointsTypes, type, offers) {
     const offer = newOffers[i];
     const isChecked = checkedOffers.some((elem) => elem.title === offer.title);
     newOffersList += `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage"} ${isChecked ? 'checked' : ''}>
-          <label class="event__offer-label" for="event-offer-luggage-1">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${i}" type="checkbox" name="event-offer-luggage" ${isChecked ? 'checked' : ''}>
+          <label class="event__offer-label" for="event-offer-luggage-${i}">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${offer.price}</span>
@@ -64,10 +65,14 @@ const generateTypeList = function (pointsTypes, state) {
 };
 
 // генерация городов
-const generateCitysList = function (destination) {
-  return `<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.city}" list="destination-list-1"><datalist id="destination-list-1">`;
+const generateCitysList = function (city) {
+  return `<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+  <datalist id="destination-list-1">
+    <option value="Amsterdam"></option>
+    <option value="Geneva"></option>
+    <option value="Chamonix"></option>
+  </datalist>`;
 };
-
 
 // генерация картинок
 const generatePicturesList = function (destination) {
@@ -78,8 +83,7 @@ const generatePicturesList = function (destination) {
   return newPicturesList;
 };
 
-
-const createFormEditTemplate = (pointsTypes, state) => {
+const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
 
   const { basePrice, dateFrom, dateTo, offers, type, destination } = state;
   const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
@@ -88,9 +92,9 @@ const createFormEditTemplate = (pointsTypes, state) => {
   const itemTypes = generateTypeList(pointsTypes, state);
   const eventPhotos = generatePicturesList(destination);
   const canDelete = Boolean(state.id);
-  const canFold = Boolean(state.id);
+  const canFold = Boolean(state.id) && hasArrowButton;
 
-  const city = generateCitysList(destination);
+  const city = generateCitysList(destination.city);
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -100,7 +104,7 @@ const createFormEditTemplate = (pointsTypes, state) => {
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle visually-hidden" id="event-type-toggle-1" type="checkbox">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -119,10 +123,6 @@ const createFormEditTemplate = (pointsTypes, state) => {
 
               ${city}
 
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
-            </datalist>
           </div>
 
           <div class="event__field-group  event__field-group--time">
@@ -179,51 +179,51 @@ export default class FormEdit extends SmartView {
       point,
       {
         currentType: getCurrentType(pointsTypes, point.type),
-        currentDestination: getCurrentDestination(destination, point.city),
+        currentDestination: getCurrentDestination(destination, point.destination.city),
       },
     );
   }
 
-  static parseStateToPoint(state) {
-    state = Object.assign(
-      {
-        type: state.currentType.type,
-        city: state.destination.city,
-        destination: state.destination.description,
-        pictures: state.destination.pictures,
-      },
-      state,
-    );
-    delete state.currentType;
-    delete state.destination;
-    return state;
+  static parseStateToPoint(point) {
+    point = Object.assign({}, point);
+    delete point.currentType;
+    delete point.currentDestination;
+    return point;
   }
 
-  constructor(pointsTypes, point, destination) {
+  constructor(pointsTypes, point, destination, changeData, hasArrowButton) {
     super();
     this._point = point;
     this._pointsTypes = pointsTypes;
     this._destination = destination;
+    this._changeData = changeData;
+    this._hasArrowButton = hasArrowButton;
 
-    this._state = FormEdit.parsePointToState(pointsTypes, point, destination);
+    this._state = FormEdit.parsePointToState(this._pointsTypes, this._point, this._destination);
+
     this._dateFromPicker = null;
     this._dateToPicker = null;
 
     this._formClickHandler = this._formClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formPriceHandler = this._formPriceHandler.bind(this);
     this._typePointChangeHandler = this._typePointChangeHandler.bind(this);
     this._typeCityChangeHandler = this._typeCityChangeHandler.bind(this);
     this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
+    this._pointDeleteHandler = this._pointDeleteHandler.bind(this);
+    this._newPointDeleteHandler = this._newPointDeleteHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setDateFromChangePicker();
     this._setDateToChangePicker();
   }
 
   getTemplate() {
-    return createFormEditTemplate(this._pointsTypes, this._state, this._destination);
+    return createFormEditTemplate(this._pointsTypes, this._state, this._hasArrowButton);
   }
 
+  // изменение даты начала евента
   _setDateFromChangePicker() {
     if (this._dateFromPicker) {
       this._dateFromPicker.destroy();
@@ -247,7 +247,7 @@ export default class FormEdit extends SmartView {
     this.updateState({
       dateFrom: dateFrom,
     }, false);
-    if(this._state.dateFrom > this._state.dateTo) {
+    if (this._state.dateFrom > this._state.dateTo) {
       this.updateState({
         dateTo: dateFrom,
       }, false);
@@ -257,6 +257,7 @@ export default class FormEdit extends SmartView {
     this._dateToPicker.set('minDate', new Date(this._state.dateFrom));
   }
 
+  // изменение даты конца евента
   _setDateToChangePicker() {
     if (this._dateToPicker) {
       this._dateToPicker.destroy();
@@ -285,6 +286,7 @@ export default class FormEdit extends SmartView {
     this._dateFromPicker.set('maxDate', new Date(this._state.dateTo));
   }
 
+  // изменение типа эвента
   setType(type) {
     const update = {
       type: type,
@@ -304,6 +306,7 @@ export default class FormEdit extends SmartView {
     this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
   }
 
+  // изменение города эвента
   setCity(city) {
     const update = {
       city: city,
@@ -315,11 +318,13 @@ export default class FormEdit extends SmartView {
 
   _typeCityChangeHandler(evt) {
     evt.preventDefault();
-    this._callback.typeCityChange(evt.target.value);
+    const city = evt.target.value || this._state.destination.city;
+
+    this._callback.typeCityChange(city);
 
     const update = {
-      city: evt.target.value,
-      destination: getCurrentDestination(this._destination, evt.target.value),
+      city: city,
+      destination: getCurrentDestination(this._destination, city),
     };
 
     this.updateState(update);
@@ -330,6 +335,7 @@ export default class FormEdit extends SmartView {
     this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
   }
 
+  // замена точки маршрута на форму редактирования
   _formClickHandler(evt) {
     evt.preventDefault();
     this._callback.formClick();
@@ -340,26 +346,107 @@ export default class FormEdit extends SmartView {
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
   }
 
-  _formSubmitHandler(evt) {
+  // изменение базовой цены
+  setPrice(price) {
+    const update = {
+      basePrice: price,
+    };
+
+    this.updateState(update, false);
+  }
+
+  _formPriceHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formPriceChange(evt.target.value);
   }
 
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+  setFormPriceHandler(callback) {
+    this._callback.formPriceChange = callback;
+    this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
   }
 
+  // изменение дополнительных офферов
+
+  toggleOffers(offerTitle) {
+
+    const existingIndex = this._state.offers.findIndex((offer) => {
+      return offer.title === offerTitle;
+    });
+
+    if (existingIndex !== -1) {
+      this._state.offers.splice(existingIndex, 1);
+    } else {
+      const newOffer = this._state.currentType.offers.find((offer) => {
+        return offer.title === offerTitle;
+      });
+      this._state.offers.push(newOffer);
+    }
+  }
+
+  _offersChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.offersChange(evt.target.parentNode.querySelector('span').textContent);
+  }
+
+  setOffersChangeHandler(callback) {
+    this._callback.offersChange = callback;
+    this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
+  }
+
+
+  // удаление точки маршрута
+  _pointDeleteHandler() {
+
+    // this._callback.pointDelete();
+
+    this._changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      this._state,
+    );
+  }
+
+  setPointDeleteHandler(callback) {
+    this._callback.pointDelete = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
+  }
+
+  // удаление несохраненной новой точки маршрута
+  _newPointDeleteHandler() {
+    this._callback.newPointDelete();
+  }
+
+  setNewPointDeleteHandler(callback) {
+    this._callback.newPointDelete = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
+  }
+
+  // установка внутренних обработчиков и их восстановление
   _setInnerHandlers() {
     this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
     this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
+    this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
+    this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this._setDateFromChangePicker();
     this._setDateToChangePicker();
+  }
+
+  // сохранение измененного стейта через сабмит
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    const point = FormEdit.parseStateToPoint(this._state);
+    this._callback.formSubmit(point);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
 }

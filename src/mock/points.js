@@ -222,7 +222,7 @@ export const generatePoint = function () {
     {
       'city': newDestination.city,
       'pictures': newDestination.pictures,
-      'description': newDestination.destination,
+      'description': newDestination.description,
     },
   };
 };

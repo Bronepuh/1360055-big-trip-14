@@ -24,8 +24,22 @@ const getFavoriteTemplate = function (isFavorite) {
   }
 };
 
+const getOffersItems = function (offers) {
+  let newOffersList = '';
+  for (let i = 0; i < offers.length; i++) {
+
+    newOffersList+= `<li class="event__offer">
+      <span class="event__offer-title">${offers[i].title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offers[i].price}</span>
+    </li>`;
+  }
+
+  return newOffersList;
+};
+
 const createEventsPointTemplate = (point) => {
-  const { basePrice, dateFrom, dateTo, isFavorite, type } = point;
+  const { basePrice, dateFrom, dateTo, isFavorite, type, destination, offers } = point;
   const from = dayjs(dateFrom);
   const to = dayjs(dateTo);
   const format = getFormat(from, to);
@@ -34,6 +48,7 @@ const createEventsPointTemplate = (point) => {
   const timeStart = dayjs(dateFrom).format(format);
   const timeEnd = dayjs(dateTo).format(format);
   const favorite = getFavoriteTemplate(isFavorite);
+  const offersItems = getOffersItems(offers);
 
   return `<li class="trip-events__item">
   <div class="event">
@@ -41,7 +56,7 @@ const createEventsPointTemplate = (point) => {
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} Amsterdam</h3>
+    <h3 class="event__title">${type} ${destination.city}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="2019-03-18T10:30">${timeStart}</time>
@@ -55,11 +70,7 @@ const createEventsPointTemplate = (point) => {
     </p>
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-      <li class="event__offer">
-        <span class="event__offer-title">Order Uber</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">20</span>
-      </li>
+      ${offersItems}
     </ul>
     <button class="event__favorite-btn event__favorite-btn--active" type="button">
       ${favorite}
