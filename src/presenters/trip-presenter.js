@@ -27,15 +27,11 @@ export default class TripPresenter {
     this._routeAndPriceViewComponent = new RouteAndPriceView();
     this._siteMenuViewComponent = new SiteMenuView();
     this._siteFiltersViewComponent = new SiteFiltersView();
-
-    // this._eventsFiltersViewComponent = new EventsFiltersView();
     this._eventsListEmptyViewComponent = new EventsListEmptyView();
     this._eventsListViewComponent = new EventsListView();
 
-    // this._handlePointChange = this._handlePointChange.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
@@ -46,13 +42,9 @@ export default class TripPresenter {
   }
 
   init() {
-    // this._points = points.slice();
-    // this._sourcedBoardPoints = points.slice();
-
     render(this._tripMainContainer, this._routeAndPriceViewComponent, RenderPosition.AFTERBEGIN);
     render(this._siteMenuContainer, this._siteMenuViewComponent, RenderPosition.BEFOREEND);
     render(this._siteFiltersContainer, this._siteFiltersViewComponent, RenderPosition.BEFOREEND);
-
     this._renderTrip();
   }
 

@@ -40,7 +40,6 @@ export default class NewPointPresenter {
     this._eventList = eventList;
     this._changeData = changeData;
 
-    this._eventPointComponent = null;
     this._formEditComponent = null;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
@@ -61,18 +60,20 @@ export default class NewPointPresenter {
     this._formEditComponent.setTypeCityChangeHandler(this._handleTypeCityClick);
     this._formEditComponent.setNewPointDeleteHandler(this._handleNewPointDelete);
     this._formEditComponent.setOffersChangeHandler(this._handleOffersChange);
+    document.addEventListener('keydown', this._escKeyDownHandler);
 
     render(this._eventList, this._formEditComponent, RenderPosition.AFTERBEGIN);
   }
 
   destroy() {
+    document.removeEventListener('keydown', this._escKeyDownHandler);
     remove(this._formEditComponent);
   }
 
   _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this._replaceFormToPoint();
+      this.destroy();
       document.removeEventListener('keydown', this._escKeyDownHandler);
     }
   }
@@ -99,6 +100,7 @@ export default class NewPointPresenter {
       UpdateType.MINOR,
       Object.assign({}, point),
     );
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
   _handleNewPointDelete() {
