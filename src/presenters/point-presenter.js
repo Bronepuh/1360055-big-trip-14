@@ -2,6 +2,7 @@ import FormEditView from '../view/form-edit';
 import EventsPointView from '../view/events-point';
 import { POINTS_TYPES, DESTINATION } from '../mock/points';
 import { render, RenderPosition, replace, remove } from '../utils/render';
+import { UserAction, UpdateType } from '../utils/const';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -22,9 +23,12 @@ export default class PointPresenter {
     this._handlePointClick = this._handlePointClick.bind(this);
     this._handleFormClick = this._handleFormClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handlePriceChange = this._handlePriceChange.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleTypePointClick = this._handleTypePointClick.bind(this);
     this._handleTypeCityClick = this._handleTypeCityClick.bind(this);
+    this._handlePointDelete = this._handlePointDelete.bind(this);
+    this._handleOffersChange = this._handleOffersChange.bind(this);
   }
 
   init(point) {
@@ -34,15 +38,18 @@ export default class PointPresenter {
     const prevFormEditComponent = this._formEditComponent;
 
     this._eventPointComponent = new EventsPointView(this._point);
-    this._formEditComponent = new FormEditView(POINTS_TYPES, this._point, DESTINATION);
+    this._formEditComponent = new FormEditView(POINTS_TYPES, this._point, DESTINATION, this._changeData, true);
 
     this._eventPointComponent.setPointClickHandler(this._handlePointClick);
     this._eventPointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     this._formEditComponent.setFormClickHandler(this._handleFormClick);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
     this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);
     this._formEditComponent.setTypeCityChangeHandler(this._handleTypeCityClick);
+    this._formEditComponent.setPointDeleteHandler(this._handlePointDelete);
+    this._formEditComponent.setOffersChangeHandler(this._handleOffersChange);
 
     if (prevEventPointComponent === null || prevFormEditComponent === null) {
       render(this._eventList, this._eventPointComponent, RenderPosition.BEFOREEND);
@@ -102,12 +109,21 @@ export default class PointPresenter {
     this._replaceFormToPoint();
   }
 
-  _handleFormSubmit() {
+  _handleFormSubmit(point) {
+
+    this._changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      Object.assign({}, point),
+    );
+
     this._replaceFormToPoint();
   }
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._point,
@@ -124,5 +140,21 @@ export default class PointPresenter {
 
   _handleTypeCityClick(city) {
     this._formEditComponent.setCity(city);
+  }
+
+  _handlePriceChange(price) {
+    this._formEditComponent.setPrice(price);
+  }
+
+  _handleOffersChange(offer) {
+    this._formEditComponent.toggleOffers(offer);
+  }
+
+  _handlePointDelete() {
+    this._changeData(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      this._point,
+    );
   }
 }

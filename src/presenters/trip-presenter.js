@@ -5,17 +5,19 @@ import EventsFiltersView from '../view/events-filters';
 import EventsListEmptyView from '../view/event-list-empty';
 import EventsListView from '../view/events-list';
 import PointPresenter from './point-presenter';
-import { updateItem } from '../utils/common.js';
-import { render, RenderPosition } from '../utils/render';
-import { SortType } from '../utils/const';
+import NewPointPresenter from './new-point-predenter';
+import { remove, render, RenderPosition } from '../utils/render';
+import { SortType, UserAction, UpdateType } from '../utils/const';
 import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/common';
 
 
 export default class TripPresenter {
-  constructor(tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer) {
+  constructor(tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer, pointsModel) {
 
+    this._pointsModel = pointsModel;
     this._pointPresenter = {};
     this._currentSortType = SortType.DAY;
+    this._eventsFiltersViewComponent = null;
 
     this._tripMainContainer = tripMainContainer;
     this._siteMenuContainer = siteMenuContainer;
@@ -26,18 +28,26 @@ export default class TripPresenter {
     this._siteMenuViewComponent = new SiteMenuView();
     this._siteFiltersViewComponent = new SiteFiltersView();
 
-    this._eventsFiltersViewComponent = new EventsFiltersView();
+    // this._eventsFiltersViewComponent = new EventsFiltersView();
     this._eventsListEmptyViewComponent = new EventsListEmptyView();
     this._eventsListViewComponent = new EventsListView();
 
-    this._handlePointChange = this._handlePointChange.bind(this);
+    // this._handlePointChange = this._handlePointChange.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+
+    this._pointsModel.addObserver(this._handleModelEvent);
+
+
+    this._newPointPresenter = new NewPointPresenter(this._eventsListViewComponent, this._handleViewAction, this._pointsModel);
   }
 
-  init(points) {
-    this._points = points.slice();
-    this._sourcedBoardPoints = points.slice();
+  init() {
+    // this._points = points.slice();
+    // this._sourcedBoardPoints = points.slice();
 
     render(this._tripMainContainer, this._routeAndPriceViewComponent, RenderPosition.AFTERBEGIN);
     render(this._siteMenuContainer, this._siteMenuViewComponent, RenderPosition.BEFOREEND);
@@ -46,59 +56,78 @@ export default class TripPresenter {
     this._renderTrip();
   }
 
+  _getPoints() {
+
+    switch (this._currentSortType) {
+      case SortType.DAY:
+        return this._pointsModel.getPoints().slice().sort(sortPointDay);
+      case SortType.TIME:
+        return this._pointsModel.getPoints().slice().sort(sortPointTime);
+      case SortType.PRICE:
+        return this._pointsModel.getPoints().slice().sort(sortPointPrice);
+    }
+
+    return this._pointsModel.getPoints();
+  }
+
   _handleModeChange() {
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.resetView());
   }
 
-  _handlePointChange(updatedPoint) {
-    this._points = updateItem(this._points, updatedPoint);
-    this._sourcedBoardPoints = updateItem(this._sourcedBoardPoints, updatedPoint);
-    this._pointPresenter[updatedPoint.id].init(updatedPoint);
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_POINT:
+        this._pointsModel.updatePoint(updateType, update);
+        break;
+      case UserAction.ADD_POINT:
+        this._pointsModel.addPoint(updateType, update);
+        break;
+      case UserAction.DELETE_POINT:
+        this._pointsModel.deletePoint(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        // - обновить часть списка (например, когда поменялось описание)
+        this._pointPresenter[data.id].init(data);
+        break;
+      case UpdateType.MINOR:
+        this._clearPoints();
+        this._renderTrip();
+        break;
+      case UpdateType.MAJOR:
+        this._clearPoints();
+        this._renderTrip();
+        break;
+    }
   }
 
   _handleSortTypeChange(sortType) {
-    // - Сортируем задачи
     if (this._currentSortType === sortType) {
       return;
     }
 
-    this._sortPoints(sortType);
-    // - Очищаем список
-    // - Рендерим список заново
-    this._clearPointsList();
-    this._renderPoints();
+    this._currentSortType = sortType;
+
+    this._clearPoints();
+
+    this._renderEventsFilters(this._currentSortType);
+    this._renderEventList();
+    this._renderPoints(this._getPoints(this._currentSortType));
   }
 
-  _sortPoints(sortType) {
-    // 2. Этот исходный массив задач необходим,
-    // потому что для сортировки мы будем мутировать
-    // массив в свойстве _boardTasks
-    switch (sortType) {
-      case SortType.DAY:
-        this._points.sort(sortPointDay);
-        break;
-      case SortType.TIME:
-        this._points.sort(sortPointTime);
-        break;
-      case SortType.PRICE:
-        this._points.sort(sortPointPrice);
-        break;
-      default:
-        // 3. А когда пользователь захочет "вернуть всё, как было",
-        // мы просто запишем в _boardTasks исходный массив
-        this._points = this._sourcedBoardPoints.slice();
-    }
-
-    this._currentSortType = sortType;
+  _renderEventsFilters() {
+    this._eventsFiltersViewComponent = new EventsFiltersView(this._currentSortType);
+    this._eventsFiltersViewComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+    render(this._eventMainContainer, this._eventsFiltersViewComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderEventList() {
-    render(this._eventMainContainer, this._eventsFiltersViewComponent, RenderPosition.AFTERBEGIN);
-
-    this._eventsFiltersViewComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-
     render(this._eventMainContainer, this._eventsListViewComponent, RenderPosition.BEFOREEND);
   }
 
@@ -107,27 +136,38 @@ export default class TripPresenter {
   }
 
   _renderPoint(point) {
-    const pointPresenter = new PointPresenter(this._eventsListViewComponent, this._handlePointChange, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventsListViewComponent, this._handleViewAction, this._handleModeChange);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }
 
-  _renderPoints(from, to) {
-    this._points
-      .slice(from, to)
-      .forEach((point) => this._renderPoint(point));
+  _renderPoints(points) {
+    points.forEach((point) => this._renderPoint(point));
   }
 
-  _clearPointsList() {
+  _clearPoints() {
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.destroy());
     this._pointPresenter = {};
+
+    remove(this._eventsFiltersViewComponent);
+    remove(this._eventsListViewComponent);
+
   }
 
   _renderTrip() {
-    this._renderEventList();
+    if (this._pointsModel.getPoints().length === 0) {
+      this._renderEmptyEventList();
+    }
 
-    this._renderPoints();
+    this._renderEventsFilters();
+    this._renderEventList();
+    this._renderPoints(this._pointsModel.getPoints());
+  }
+
+  createPoint() {
+    remove(this._eventsListEmptyViewComponent);
+    this._newPointPresenter.init();
   }
 }
