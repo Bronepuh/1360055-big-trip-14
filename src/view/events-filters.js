@@ -46,8 +46,6 @@ export default class EventsFilters extends AbstractView {
     if (evt.target.tagName !== 'LABEL') {
       return;
     }
-
-    evt.preventDefault();
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 
