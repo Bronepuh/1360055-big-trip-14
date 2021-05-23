@@ -3,7 +3,6 @@ import he from 'he';
 import SmartView from './smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import { UserAction, UpdateType } from '../utils/const';
 import { DESTINATION } from '../mock/points';
 
 // генерация дополнительных опций
@@ -85,7 +84,7 @@ const generatePicturesList = function (destination) {
   return newPicturesList;
 };
 
-const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
+const createFormAddTemplate = (pointsTypes, state, hasArrowButton) => {
 
   const { basePrice, dateFrom, dateTo, offers, type, destination } = state;
   const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
@@ -177,7 +176,7 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
     </li>`;
 };
 
-export default class FormEdit extends SmartView {
+export default class FormAdd extends SmartView {
 
   static parsePointToState(pointsTypes, point, destination) {
     return Object.assign(
@@ -205,12 +204,11 @@ export default class FormEdit extends SmartView {
     this._changeData = changeData;
     this._hasArrowButton = hasArrowButton;
 
-    this._state = FormEdit.parsePointToState(this._pointsTypes, this._point, this._destination);
+    this._state = FormAdd.parsePointToState(this._pointsTypes, this._point, this._destination);
 
     this._dateFromPicker = null;
     this._dateToPicker = null;
 
-    this._formClickHandler = this._formClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formPriceHandler = this._formPriceHandler.bind(this);
     this._typePointChangeHandler = this._typePointChangeHandler.bind(this);
@@ -218,7 +216,6 @@ export default class FormEdit extends SmartView {
     this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
     this._pointDeleteHandler = this._pointDeleteHandler.bind(this);
-    this._newPointDeleteHandler = this._newPointDeleteHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
@@ -227,13 +224,12 @@ export default class FormEdit extends SmartView {
   }
 
   getTemplate() {
-    return createFormEditTemplate(this._pointsTypes, this._state, this._hasArrowButton);
+    return createFormAddTemplate(this._pointsTypes, this._state, this._hasArrowButton);
   }
 
   // установка внутренних обработчиков и их восстановление
   _setInnerHandlers() {
     this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
     this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
     this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
@@ -364,17 +360,6 @@ export default class FormEdit extends SmartView {
     this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
   }
 
-  // замена точки маршрута на форму редактирования
-  _formClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.formClick();
-  }
-
-  setFormClickHandler(callback) {
-    this._callback.formClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
-  }
-
   // изменение базовой цены
   setPrice(price) {
     const update = {
@@ -426,13 +411,13 @@ export default class FormEdit extends SmartView {
   // удаление точки маршрута
   _pointDeleteHandler() {
 
-    // this._callback.pointDelete();
+    this._callback.pointDelete();
 
-    this._changeData(
-      UserAction.DELETE_POINT,
-      UpdateType.MINOR,
-      this._state,
-    );
+    // this._changeData(
+    //   UserAction.DELETE_POINT,
+    //   UpdateType.MINOR,
+    //   this._state,
+    // );
   }
 
   setPointDeleteHandler(callback) {
@@ -440,20 +425,11 @@ export default class FormEdit extends SmartView {
     this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
   }
 
-  // удаление несохраненной новой точки маршрута
-  _newPointDeleteHandler() {
-    this._callback.newPointDelete();
-  }
-
-  setNewPointDeleteHandler(callback) {
-    this._callback.newPointDelete = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
-  }
 
   // сохранение измененного стейта через сабмит
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    const point = FormEdit.parseStateToPoint(this._state);
+    const point = FormAdd.parseStateToPoint(this._state);
     this._callback.formSubmit(point);
   }
 

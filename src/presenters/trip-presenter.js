@@ -6,7 +6,7 @@ import EventsFiltersView from '../view/events-filters';
 import EventsListEmptyView from '../view/event-list-empty';
 import EventsListView from '../view/events-list';
 import PointPresenter from './point-presenter';
-import NewPointPresenter from './new-point-predenter';
+import NewPointPresenter from './new-point-presenter';
 import { remove, render, RenderPosition } from '../utils/render';
 import { SortType, UserAction, UpdateType } from '../utils/const';
 import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/common';

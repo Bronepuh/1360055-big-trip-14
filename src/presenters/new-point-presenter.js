@@ -1,8 +1,7 @@
-import FormEditView from '../view/form-edit';
+import FormAddView from '../view/form-add';
 import { POINTS_TYPES, DESTINATION } from '../mock/points';
 import { render, RenderPosition, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../utils/const';
-
 import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
 
@@ -40,34 +39,34 @@ export default class NewPointPresenter {
     this._eventList = eventList;
     this._changeData = changeData;
 
-    this._formEditComponent = null;
+    this._formAddComponent = null;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handlePriceChange = this._handlePriceChange.bind(this);
     this._handleTypePointClick = this._handleTypePointClick.bind(this);
     this._handleTypeCityClick = this._handleTypeCityClick.bind(this);
-    this._handleNewPointDelete = this._handleNewPointDelete.bind(this);
     this._handleOffersChange = this._handleOffersChange.bind(this);
+    this._handlePointDelete = this._handlePointDelete.bind(this);
   }
 
   init() {
 
-    this._formEditComponent = new FormEditView(POINTS_TYPES, DEFAULT_POINT, DESTINATION, this._changeData, false);
-    this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
-    this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);
-    this._formEditComponent.setTypeCityChangeHandler(this._handleTypeCityClick);
-    this._formEditComponent.setNewPointDeleteHandler(this._handleNewPointDelete);
-    this._formEditComponent.setOffersChangeHandler(this._handleOffersChange);
+    this._formAddComponent = new FormAddView(POINTS_TYPES, DEFAULT_POINT, DESTINATION, this._changeData, false);
+    this._formAddComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._formAddComponent.setFormPriceHandler(this._handlePriceChange);
+    this._formAddComponent.setTypePointChangeHandler(this._handleTypePointClick);
+    this._formAddComponent.setTypeCityChangeHandler(this._handleTypeCityClick);
+    this._formAddComponent.setOffersChangeHandler(this._handleOffersChange);
+    this._formAddComponent.setPointDeleteHandler(this._handlePointDelete);
     document.addEventListener('keydown', this._escKeyDownHandler);
 
-    render(this._eventList, this._formEditComponent, RenderPosition.AFTERBEGIN);
+    render(this._eventList, this._formAddComponent, RenderPosition.AFTERBEGIN);
   }
 
   destroy() {
     document.removeEventListener('keydown', this._escKeyDownHandler);
-    remove(this._formEditComponent);
+    remove(this._formAddComponent);
   }
 
   _escKeyDownHandler(evt) {
@@ -79,19 +78,19 @@ export default class NewPointPresenter {
   }
 
   _handleTypePointClick(type) {
-    this._formEditComponent.setType(type);
+    this._formAddComponent.setType(type);
   }
 
   _handleTypeCityClick(city) {
-    this._formEditComponent.setCity(city);
+    this._formAddComponent.setCity(city);
   }
 
   _handlePriceChange(price) {
-    this._formEditComponent.setPrice(price);
+    this._formAddComponent.setPrice(price);
   }
 
   _handleOffersChange(offer) {
-    this._formEditComponent.toggleOffers(offer);
+    this._formAddComponent.toggleOffers(offer);
   }
 
   _handleFormSubmit(point) {
@@ -103,7 +102,7 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _handleNewPointDelete() {
+  _handlePointDelete() {
     this.destroy();
   }
 }
