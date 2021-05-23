@@ -7,13 +7,14 @@ const tripMainContainer = document.querySelector('.trip-main');
 const siteMenuContainer = document.querySelector('.trip-controls__navigation');
 const siteFiltersContainer = document.querySelector('.trip-controls__filters');
 const eventMainContainer = document.querySelector('.trip-events');
+const statContainer = document.querySelector('.page-body__page-main');
 
 const points = new Array(POINTS_COUNT).fill().map(generatePoint);
 
 const pointsModel = new PointsModel();
 pointsModel.setPoints(points);
 
-const tripPresenter = new TripPresenter(tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer, pointsModel);
+const tripPresenter = new TripPresenter(statContainer, tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer, pointsModel);
 tripPresenter.init();
 
 document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {

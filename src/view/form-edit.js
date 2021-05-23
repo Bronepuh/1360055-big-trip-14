@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
+import he from 'he';
 import SmartView from './smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import { UserAction, UpdateType } from '../utils/const';
+import { DESTINATION } from '../mock/points';
 
 // генерация дополнительных опций
 const getCurrentType = function (pointsTypes, type) {
@@ -65,13 +67,13 @@ const generateTypeList = function (pointsTypes, state) {
 };
 
 // генерация городов
-const generateCitysList = function (city) {
-  return `<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
-  <datalist id="destination-list-1">
-    <option value="Amsterdam"></option>
-    <option value="Geneva"></option>
-    <option value="Chamonix"></option>
-  </datalist>`;
+const generateCitysList = function (DESTINATION) {
+  let newCitysList = '';
+  for (let i = 0; i < DESTINATION.length; i++) {
+    newCitysList += `<option value="${he.encode(DESTINATION[i].city)}"></option>`;
+  }
+
+  return newCitysList;
 };
 
 // генерация картинок
@@ -94,7 +96,7 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
   const canDelete = Boolean(state.id);
   const canFold = Boolean(state.id) && hasArrowButton;
 
-  const city = generateCitysList(destination.city);
+  const citysList = generateCitysList(DESTINATION);
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -121,8 +123,12 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
               Flight
             </label>
 
-              ${city}
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.city}" list="destination-list-1">
+            <datalist id="destination-list-1">
 
+              ${citysList}
+
+            </datalist>
           </div>
 
           <div class="event__field-group  event__field-group--time">
@@ -318,10 +324,15 @@ export default class FormEdit extends SmartView {
 
   _typeCityChangeHandler(evt) {
     evt.preventDefault();
+    const userInputValue = evt.target.value;
+    const validateUserInput = getCurrentDestination(this._destination, userInputValue);
+
+    if (validateUserInput === undefined) {
+      throw new Error('Такого города нет!');
+    }
+
     const city = evt.target.value || this._state.destination.city;
-
     this._callback.typeCityChange(city);
-
     const update = {
       city: city,
       destination: getCurrentDestination(this._destination, city),
