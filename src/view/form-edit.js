@@ -3,7 +3,6 @@ import he from 'he';
 import SmartView from './smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import { UserAction, UpdateType } from '../utils/const';
 import { DESTINATION } from '../mock/points';
 
 // генерация дополнительных опций
@@ -94,7 +93,7 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
   const itemTypes = generateTypeList(pointsTypes, state);
   const eventPhotos = generatePicturesList(destination);
   const canDelete = Boolean(state.id);
-  const canFold = Boolean(state.id) && hasArrowButton;
+  const canFold = hasArrowButton;
 
   const citysList = generateCitysList(DESTINATION);
 
@@ -233,7 +232,11 @@ export default class FormEdit extends SmartView {
   // установка внутренних обработчиков и их восстановление
   _setInnerHandlers() {
     this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
+
+    if(this._hasArrowButton) {
+      this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
+    }
+
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
     this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
     this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
@@ -426,13 +429,13 @@ export default class FormEdit extends SmartView {
   // удаление точки маршрута
   _pointDeleteHandler() {
 
-    // this._callback.pointDelete();
+    this._callback.pointDelete();
 
-    this._changeData(
-      UserAction.DELETE_POINT,
-      UpdateType.MINOR,
-      this._state,
-    );
+    // this._changeData(
+    //   UserAction.DELETE_POINT,
+    //   UpdateType.MINOR,
+    //   this._state,
+    // );
   }
 
   setPointDeleteHandler(callback) {

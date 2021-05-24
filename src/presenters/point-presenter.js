@@ -10,10 +10,11 @@ const Mode = {
 };
 
 export default class PointPresenter {
-  constructor(eventList, changeData, changeMode) {
+  constructor(eventList, changeData, changeMode, handleOpenEditForm) {
     this._eventList = eventList;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._handleOpenEditForm = handleOpenEditForm;
 
     this._eventPointComponent = null;
     this._formEditComponent = null;
@@ -103,6 +104,7 @@ export default class PointPresenter {
 
   _handlePointClick() {
     this._replacePointToForm();
+    this._handleOpenEditForm();
   }
 
   _handleFormClick() {
@@ -152,7 +154,7 @@ export default class PointPresenter {
 
   _handlePointDelete() {
     this._changeData(
-      UserAction.DELETE_TASK,
+      UserAction.DELETE_POINT,
       UpdateType.MINOR,
       this._point,
     );

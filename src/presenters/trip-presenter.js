@@ -38,6 +38,7 @@ export default class TripPresenter {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
+    this._handleOpenEditForm = this._handleOpenEditForm.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
 
@@ -66,6 +67,10 @@ export default class TripPresenter {
     }
 
     return this._pointsModel.getPoints();
+  }
+
+  _handleOpenEditForm() {
+    this._newPointPresenter.destroy();
   }
 
   _handleModeChange() {
@@ -145,6 +150,9 @@ export default class TripPresenter {
   }
 
   _renderEventsFilters() {
+    if (this._eventsFiltersViewComponent) {
+      remove(this._eventsFiltersViewComponent);
+    }
     this._eventsFiltersViewComponent = new EventsFiltersView(this._currentSortType);
     this._eventsFiltersViewComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
     render(this._eventMainContainer, this._eventsFiltersViewComponent, RenderPosition.AFTERBEGIN);
@@ -159,7 +167,7 @@ export default class TripPresenter {
   }
 
   _renderPoint(point) {
-    const pointPresenter = new PointPresenter(this._eventsListViewComponent, this._handleViewAction, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventsListViewComponent, this._handleViewAction, this._handleModeChange, this._handleOpenEditForm);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }
@@ -192,5 +200,12 @@ export default class TripPresenter {
   createPoint() {
     remove(this._eventsListEmptyViewComponent);
     this._newPointPresenter.init(this._eventsListViewComponent, this._handleViewAction, this._pointsModel);
+
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
+
+    this._currentSortType = SortType.DAY;
+    this._renderEventsFilters();
   }
 }
