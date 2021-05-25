@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
+import he from 'he';
 import SmartView from './smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import { UserAction, UpdateType } from '../utils/const';
+import { DESTINATION } from '../mock/points';
 
 // генерация дополнительных опций
 const getCurrentType = function (pointsTypes, type) {
@@ -65,13 +66,13 @@ const generateTypeList = function (pointsTypes, state) {
 };
 
 // генерация городов
-const generateCitysList = function (city) {
-  return `<input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
-  <datalist id="destination-list-1">
-    <option value="Amsterdam"></option>
-    <option value="Geneva"></option>
-    <option value="Chamonix"></option>
-  </datalist>`;
+const generateCitysList = function (DESTINATION) {
+  let newCitysList = '';
+  for (let i = 0; i < DESTINATION.length; i++) {
+    newCitysList += `<option value="${he.encode(DESTINATION[i].city)}"></option>`;
+  }
+
+  return newCitysList;
 };
 
 // генерация картинок
@@ -92,9 +93,9 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
   const itemTypes = generateTypeList(pointsTypes, state);
   const eventPhotos = generatePicturesList(destination);
   const canDelete = Boolean(state.id);
-  const canFold = Boolean(state.id) && hasArrowButton;
+  const canFold = hasArrowButton;
 
-  const city = generateCitysList(destination.city);
+  const citysList = generateCitysList(DESTINATION);
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -121,8 +122,12 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
               Flight
             </label>
 
-              ${city}
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.city}" list="destination-list-1">
+            <datalist id="destination-list-1">
 
+              ${citysList}
+
+            </datalist>
           </div>
 
           <div class="event__field-group  event__field-group--time">
@@ -215,12 +220,35 @@ export default class FormEdit extends SmartView {
     this._newPointDeleteHandler = this._newPointDeleteHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
+    this._setInnerHandlers();
     this._setDateFromChangePicker();
     this._setDateToChangePicker();
   }
 
   getTemplate() {
     return createFormEditTemplate(this._pointsTypes, this._state, this._hasArrowButton);
+  }
+
+  // установка внутренних обработчиков и их восстановление
+  _setInnerHandlers() {
+    this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
+
+    if(this._hasArrowButton) {
+      this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
+    }
+
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+    this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
+    this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
+    this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setDateFromChangePicker();
+    this._setDateToChangePicker();
   }
 
   // изменение даты начала евента
@@ -303,7 +331,6 @@ export default class FormEdit extends SmartView {
 
   setTypePointChangeHandler(callback) {
     this._callback.typePointChange = callback;
-    this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
   }
 
   // изменение города эвента
@@ -318,10 +345,15 @@ export default class FormEdit extends SmartView {
 
   _typeCityChangeHandler(evt) {
     evt.preventDefault();
+    const userInputValue = evt.target.value;
+    const validateUserInput = getCurrentDestination(this._destination, userInputValue);
+
+    if (validateUserInput === undefined) {
+      throw new Error('Такого города нет!');
+    }
+
     const city = evt.target.value || this._state.destination.city;
-
     this._callback.typeCityChange(city);
-
     const update = {
       city: city,
       destination: getCurrentDestination(this._destination, city),
@@ -332,7 +364,6 @@ export default class FormEdit extends SmartView {
 
   setTypeCityChangeHandler(callback) {
     this._callback.typeCityChange = callback;
-    this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
   }
 
   // замена точки маршрута на форму редактирования
@@ -343,7 +374,6 @@ export default class FormEdit extends SmartView {
 
   setFormClickHandler(callback) {
     this._callback.formClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
   }
 
   // изменение базовой цены
@@ -357,12 +387,12 @@ export default class FormEdit extends SmartView {
 
   _formPriceHandler(evt) {
     evt.preventDefault();
-    this._callback.formPriceChange(evt.target.value);
+    const price = Number(evt.target.value);
+    this._callback.formPriceChange(price);
   }
 
   setFormPriceHandler(callback) {
     this._callback.formPriceChange = callback;
-    this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
   }
 
   // изменение дополнительных офферов
@@ -390,25 +420,15 @@ export default class FormEdit extends SmartView {
 
   setOffersChangeHandler(callback) {
     this._callback.offersChange = callback;
-    this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
   }
-
 
   // удаление точки маршрута
   _pointDeleteHandler() {
-
-    // this._callback.pointDelete();
-
-    this._changeData(
-      UserAction.DELETE_POINT,
-      UpdateType.MINOR,
-      this._state,
-    );
+    this._callback.pointDelete();
   }
 
   setPointDeleteHandler(callback) {
     this._callback.pointDelete = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
   }
 
   // удаление несохраненной новой точки маршрута
@@ -418,24 +438,6 @@ export default class FormEdit extends SmartView {
 
   setNewPointDeleteHandler(callback) {
     this._callback.newPointDelete = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
-  }
-
-  // установка внутренних обработчиков и их восстановление
-  _setInnerHandlers() {
-    this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
-    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
-    this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
-    this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
-    this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this._setDateFromChangePicker();
-    this._setDateToChangePicker();
   }
 
   // сохранение измененного стейта через сабмит
@@ -447,6 +449,5 @@ export default class FormEdit extends SmartView {
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
 }
