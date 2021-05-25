@@ -42,8 +42,7 @@ export default class TripPresenter {
 
     this._pointsModel.addObserver(this._handleModelEvent);
 
-
-    this._newPointPresenter = new NewPointPresenter(this._eventsListViewComponent, this._handleViewAction, this._pointsModel);
+    this._newPointPresenter = new NewPointPresenter();
   }
 
   init() {
@@ -86,6 +85,7 @@ export default class TripPresenter {
         break;
       case UserAction.ADD_POINT:
         this._pointsModel.addPoint(updateType, update);
+
         break;
       case UserAction.DELETE_POINT:
         this._pointsModel.deletePoint(updateType, update);

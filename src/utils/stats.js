@@ -5,61 +5,61 @@ dayjs.extend(duration);
 
 export const countMoney = function (points) {
 
-  const MONEY = {
-    taxi: Number(0),
-    bus: Number(0),
-    train: Number(0),
-    ship: Number(0),
-    transport: Number(0),
-    drive: Number(0),
-    flight: Number(0),
-    sightseeing: Number(0),
-    restaurant: Number(0),
-    'check-in': Number(0),
+  const money = {
+    taxi: 0,
+    bus: 0,
+    train: 0,
+    ship: 0,
+    transport: 0,
+    drive: 0,
+    flight: 0,
+    sightseeing: 0,
+    restaurant: 0,
+    'check-in': 0,
   };
 
   points.forEach((element) => {
     const type = element.type;
-    MONEY[type] = Number(MONEY[type] + element.basePrice);
+    money[type] = money[type] + Number(element.basePrice);
   });
-  return MONEY;
+  return money;
 };
 
 export const countType = function (points) {
 
-  const TYPE = {
-    taxi: Number(0),
-    bus: Number(0),
-    train: Number(0),
-    ship: Number(0),
-    transport: Number(0),
-    drive: Number(0),
-    flight: Number(0),
-    sightseeing: Number(0),
-    restaurant: Number(0),
-    'check-in': Number(0),
+  const types = {
+    taxi: 0,
+    bus: 0,
+    train: 0,
+    ship: 0,
+    transport: 0,
+    drive: 0,
+    flight: 0,
+    sightseeing: 0,
+    restaurant: 0,
+    'check-in': 0,
   };
 
   points.forEach((element) => {
     const type = element.type;
-    TYPE[type] = TYPE[type] + 1;
+    types[type] = types[type] + 1;
   });
-  return TYPE;
+  return types;
 };
 
 export const countTime = function (points) {
 
-  const TIME = {
-    taxi: Number(0),
-    bus: Number(0),
-    train: Number(0),
-    ship: Number(0),
-    transport: Number(0),
-    drive: Number(0),
-    flight: Number(0),
-    sightseeing: Number(0),
-    restaurant: Number(0),
-    'check-in': Number(0),
+  const time = {
+    taxi: 0,
+    bus: 0,
+    train: 0,
+    ship: 0,
+    transport: 0,
+    drive: 0,
+    flight: 0,
+    sightseeing: 0,
+    restaurant: 0,
+    'check-in': 0,
   };
 
   points.forEach((element) => {
@@ -67,7 +67,7 @@ export const countTime = function (points) {
     const to = dayjs(element.dateTo);
     const diff = to.diff(from, 'ms');
     const type = element.type;
-    TIME[type] = TIME[type] + diff;
+    time[type] = time[type] + diff;
   });
-  return TIME;
+  return time;
 };

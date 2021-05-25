@@ -242,6 +242,7 @@ export default class FormEdit extends SmartView {
     this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
     this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
     this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
   }
 
   restoreHandlers() {
@@ -330,7 +331,6 @@ export default class FormEdit extends SmartView {
 
   setTypePointChangeHandler(callback) {
     this._callback.typePointChange = callback;
-    this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
   }
 
   // изменение города эвента
@@ -364,7 +364,6 @@ export default class FormEdit extends SmartView {
 
   setTypeCityChangeHandler(callback) {
     this._callback.typeCityChange = callback;
-    this.getElement().querySelector('#event-destination-1').addEventListener('change', this._typeCityChangeHandler);
   }
 
   // замена точки маршрута на форму редактирования
@@ -375,7 +374,6 @@ export default class FormEdit extends SmartView {
 
   setFormClickHandler(callback) {
     this._callback.formClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
   }
 
   // изменение базовой цены
@@ -389,12 +387,12 @@ export default class FormEdit extends SmartView {
 
   _formPriceHandler(evt) {
     evt.preventDefault();
-    this._callback.formPriceChange(evt.target.value);
+    const price = Number(evt.target.value);
+    this._callback.formPriceChange(price);
   }
 
   setFormPriceHandler(callback) {
     this._callback.formPriceChange = callback;
-    this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
   }
 
   // изменение дополнительных офферов
@@ -422,25 +420,15 @@ export default class FormEdit extends SmartView {
 
   setOffersChangeHandler(callback) {
     this._callback.offersChange = callback;
-    this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
   }
-
 
   // удаление точки маршрута
   _pointDeleteHandler() {
-
     this._callback.pointDelete();
-
-    // this._changeData(
-    //   UserAction.DELETE_POINT,
-    //   UpdateType.MINOR,
-    //   this._state,
-    // );
   }
 
   setPointDeleteHandler(callback) {
     this._callback.pointDelete = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
   }
 
   // удаление несохраненной новой точки маршрута
@@ -450,7 +438,6 @@ export default class FormEdit extends SmartView {
 
   setNewPointDeleteHandler(callback) {
     this._callback.newPointDelete = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
   }
 
   // сохранение измененного стейта через сабмит
@@ -462,6 +449,5 @@ export default class FormEdit extends SmartView {
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
 }

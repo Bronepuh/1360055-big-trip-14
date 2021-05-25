@@ -43,7 +43,6 @@ export default class PointPresenter {
 
     this._eventPointComponent.setPointClickHandler(this._handlePointClick);
     this._eventPointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-
     this._formEditComponent.setFormClickHandler(this._handleFormClick);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
@@ -69,6 +68,7 @@ export default class PointPresenter {
     remove(prevFormEditComponent);
 
   }
+
 
   destroy() {
     remove(this._eventPointComponent);

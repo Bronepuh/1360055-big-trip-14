@@ -1,4 +1,4 @@
-export const POINTS_COUNT = 5;
+export const POINTS_COUNT = 10;
 
 export const SortType = {
   DAY: 'day',

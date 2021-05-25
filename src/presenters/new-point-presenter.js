@@ -6,38 +6,36 @@ import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
 
 
-const DEFAULT_POINT = {
-  'basePrice': 0,
-  'dateFrom': dayjs(),
-  'dateTo': dayjs().add(2, 'hour'),
-  'id': nanoid(),
-  'isFavorite': false,
-  'offers': [
-    {
-      'title': 'Add luggage',
-      'price': 30,
-    }, {
-      'title': 'Switch to comfort class',
-      'price': 100,
-    },
-  ],
-  'type': 'taxi',
-  'destination':
-  {
-    'city': 'Amsterdam',
-    'pictures': [
-      'http://picsum.photos/248/152?r=4.jpg',
+const getNewPoint = function () {
+  return {
+    'basePrice': 0,
+    'dateFrom': dayjs(),
+    'dateTo': dayjs().add(2, 'hour'),
+    'id': nanoid(),
+    'isFavorite': false,
+    'offers': [
+      {
+        'title': 'Add luggage',
+        'price': 30,
+      }, {
+        'title': 'Switch to comfort class',
+        'price': 100,
+      },
     ],
-    'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  },
+    'type': 'taxi',
+    'destination':
+    {
+      'city': 'Amsterdam',
+      'pictures': [
+        'http://picsum.photos/248/152?r=4.jpg',
+      ],
+      'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    },
+  };
 };
 
 export default class NewPointPresenter {
-  constructor(eventList, changeData, pointsModel) {
-
-    this._pointsModel = pointsModel;
-    this._eventList = eventList;
-    this._changeData = changeData;
+  constructor() {
 
     this._formEditComponent = null;
 
@@ -50,9 +48,13 @@ export default class NewPointPresenter {
     this._handlePointDelete = this._handlePointDelete.bind(this);
   }
 
-  init() {
+  init(eventList, changeData, pointsModel) {
 
-    this._formEditComponent = new FormEditView(POINTS_TYPES, DEFAULT_POINT, DESTINATION, this._changeData, false);
+    this._pointsModel = pointsModel;
+    this._eventList = eventList;
+    this._changeData = changeData;
+
+    this._formEditComponent = new FormEditView(POINTS_TYPES, getNewPoint(), DESTINATION, this._changeData, false);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
     this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);
@@ -97,9 +99,13 @@ export default class NewPointPresenter {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      Object.assign({}, point),
+      Object.assign({
+
+      }, point),
     );
+
     document.removeEventListener('keydown', this._escKeyDownHandler);
+    this.destroy();
   }
 
   _handlePointDelete() {
