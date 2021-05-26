@@ -1,4 +1,4 @@
-export const POINTS_COUNT = 10;
+// export const POINTS_COUNT = 10;
 
 export const SortType = {
   DAY: 'day',
@@ -16,4 +16,5 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };

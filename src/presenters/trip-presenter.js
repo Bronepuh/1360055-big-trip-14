@@ -5,6 +5,7 @@ import SiteFiltersView from '../view/site-filters';
 import EventsFiltersView from '../view/events-filters';
 import EventsListEmptyView from '../view/event-list-empty';
 import EventsListView from '../view/events-list';
+import LoadingView from '../view/loading';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
 import { remove, render, RenderPosition } from '../utils/render';
@@ -13,12 +14,17 @@ import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/common';
 
 
 export default class TripPresenter {
-  constructor(statContainer, tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer, pointsModel) {
+  constructor(statContainer, tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer, pointsModel, destinationsModel, pointTypesModel, api) {
 
     this._pointsModel = pointsModel;
+    this._destinationsModel = destinationsModel;
+    this._pointTypesModel = pointTypesModel;
+
     this._pointPresenter = {};
     this._currentSortType = SortType.DAY;
     this._eventsFiltersViewComponent = null;
+    this._isLoading = true;
+    this._api = api;
 
     this._statContainer = statContainer;
     this._tripMainContainer = tripMainContainer;
@@ -32,6 +38,7 @@ export default class TripPresenter {
     this._siteFiltersViewComponent = new SiteFiltersView();
     this._eventsListEmptyViewComponent = new EventsListEmptyView();
     this._eventsListViewComponent = new EventsListView();
+    this._loadingComponent = new LoadingView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -41,6 +48,7 @@ export default class TripPresenter {
     this._handleOpenEditForm = this._handleOpenEditForm.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
+    // this._constModel.addObserver(this._handleModelEvent);
 
     this._newPointPresenter = new NewPointPresenter();
   }
@@ -51,6 +59,8 @@ export default class TripPresenter {
     this._siteMenuViewComponent.setMenuClickHandler(this._handleSiteMenuClick);
 
     render(this._siteFiltersContainer, this._siteFiltersViewComponent, RenderPosition.BEFOREEND);
+    // render(this._eventMainContainer, this._eventsListViewComponent, RenderPosition.BEFOREEND);
+
     this._renderTrip();
   }
 
@@ -81,14 +91,19 @@ export default class TripPresenter {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this._pointsModel.updatePoint(updateType, update);
+        this._api.updatePoint(update).then((response) => {
+          this._pointsModel.updatePoint(updateType, response);
+        });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
-
+        this._api.addPoint(update).then((response) => {
+          this._pointsModel.addPoint(updateType, response);
+        });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        this._api.deletePoint(update).then(() => {
+          this._pointsModel.deletePoint(updateType, update);
+        });
         break;
     }
   }
@@ -104,6 +119,11 @@ export default class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this._clearPoints();
+        this._renderTrip();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderTrip();
         break;
     }
@@ -131,20 +151,13 @@ export default class TripPresenter {
         remove(this._statsViewComponent);
         render(this._statContainer, this._statsViewComponent, RenderPosition.BEFOREEND);
         this._statsViewComponent._setCharts();
-
         remove(this._eventsFiltersViewComponent);
         remove(this._eventsListViewComponent);
-        // Скрыть статистику
-        // Показать доску
-        // Показать форму добавления новой задачи
-        // Убрать выделение с ADD NEW TASK после сохранения
         break;
       case 'Table':
         remove(this._statsViewComponent);
         this._clearPoints();
         this._renderTrip();
-        // Показать доску
-        // Скрыть статистику
         break;
     }
   }
@@ -167,9 +180,13 @@ export default class TripPresenter {
   }
 
   _renderPoint(point) {
-    const pointPresenter = new PointPresenter(this._eventsListViewComponent, this._handleViewAction, this._handleModeChange, this._handleOpenEditForm);
+    const pointPresenter = new PointPresenter(this._eventsListViewComponent, this._handleViewAction, this._handleModeChange, this._handleOpenEditForm, this._destinationsModel, this._pointTypesModel);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
+  }
+
+  _renderLoading() {
+    render(this._eventsListViewComponent, this._loadingComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderPoints(points) {
@@ -187,7 +204,13 @@ export default class TripPresenter {
 
   }
 
+
   _renderTrip() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     if (this._pointsModel.getPoints().length === 0) {
       this._renderEmptyEventList();
     }
@@ -208,4 +231,5 @@ export default class TripPresenter {
     this._currentSortType = SortType.DAY;
     this._renderEventsFilters();
   }
+
 }

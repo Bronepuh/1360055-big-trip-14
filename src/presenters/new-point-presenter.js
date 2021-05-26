@@ -2,7 +2,7 @@ import FormEditView from '../view/form-edit';
 import { POINTS_TYPES, DESTINATION } from '../mock/points';
 import { render, RenderPosition, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../utils/const';
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
 
 
@@ -11,7 +11,6 @@ const getNewPoint = function () {
     'basePrice': 0,
     'dateFrom': dayjs(),
     'dateTo': dayjs().add(2, 'hour'),
-    'id': nanoid(),
     'isFavorite': false,
     'offers': [
       {
@@ -27,7 +26,10 @@ const getNewPoint = function () {
     {
       'city': 'Amsterdam',
       'pictures': [
-        'http://picsum.photos/248/152?r=4.jpg',
+        {
+          src: 'http://picsum.photos/248/152?r=4.jpg',
+          description: 'Chamonix parliament building',
+        },
       ],
       'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     },
@@ -99,9 +101,7 @@ export default class NewPointPresenter {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      Object.assign({
-
-      }, point),
+      point,
     );
 
     document.removeEventListener('keydown', this._escKeyDownHandler);
