@@ -48,7 +48,6 @@ export default class TripPresenter {
     this._handleOpenEditForm = this._handleOpenEditForm.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
-    // this._constModel.addObserver(this._handleModelEvent);
 
     this._newPointPresenter = new NewPointPresenter();
   }
@@ -59,7 +58,6 @@ export default class TripPresenter {
     this._siteMenuViewComponent.setMenuClickHandler(this._handleSiteMenuClick);
 
     render(this._siteFiltersContainer, this._siteFiltersViewComponent, RenderPosition.BEFOREEND);
-    // render(this._eventMainContainer, this._eventsListViewComponent, RenderPosition.BEFOREEND);
 
     this._renderTrip();
   }
@@ -222,7 +220,7 @@ export default class TripPresenter {
 
   createPoint() {
     remove(this._eventsListEmptyViewComponent);
-    this._newPointPresenter.init(this._eventsListViewComponent, this._handleViewAction, this._pointsModel);
+    this._newPointPresenter.init(this._eventsListViewComponent, this._handleViewAction, this._pointsModel, this._destinationsModel, this._pointTypesModel);
 
     Object
       .values(this._pointPresenter)

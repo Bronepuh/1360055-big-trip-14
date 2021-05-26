@@ -1,5 +1,5 @@
 import FormEditView from '../view/form-edit';
-import { POINTS_TYPES, DESTINATION } from '../mock/points';
+// import { POINTS_TYPES, DESTINATION } from '../mock/points';
 import { render, RenderPosition, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../utils/const';
 // import { nanoid } from 'nanoid';
@@ -38,9 +38,7 @@ const getNewPoint = function () {
 
 export default class NewPointPresenter {
   constructor() {
-
     this._formEditComponent = null;
-
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handlePriceChange = this._handlePriceChange.bind(this);
@@ -50,13 +48,16 @@ export default class NewPointPresenter {
     this._handlePointDelete = this._handlePointDelete.bind(this);
   }
 
-  init(eventList, changeData, pointsModel) {
+  init(eventList, changeData, pointsModel, destinationsModel, pointTypesModel) {
 
-    this._pointsModel = pointsModel;
     this._eventList = eventList;
     this._changeData = changeData;
+    this._pointsModel = pointsModel;
+    this._destinationsModel = destinationsModel;
+    this._pointTypesModel = pointTypesModel;
 
-    this._formEditComponent = new FormEditView(POINTS_TYPES, getNewPoint(), DESTINATION, this._changeData, false);
+
+    this._formEditComponent = new FormEditView(getNewPoint(), this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, false);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
     this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);

@@ -24,10 +24,7 @@ const getCurrentDestination = function (destinations, city) {
       const currentDestination = {
         city: destinations[i].city,
         description: destinations[i].description,
-        pictures: {
-          src: destinations[i].src,
-          description: destinations[i].description,
-        },
+        pictures: destinations[i].pictures,
       };
       return currentDestination;
     }
@@ -343,7 +340,7 @@ export default class FormEdit extends SmartView {
   setCity(city) {
     const update = {
       city: city,
-      destination: getCurrentDestination(this._destination, city),
+      destination: getCurrentDestination(this._destinations, city),
     };
 
     this.updateState(update);
@@ -352,7 +349,7 @@ export default class FormEdit extends SmartView {
   _typeCityChangeHandler(evt) {
     evt.preventDefault();
     const userInputValue = evt.target.value;
-    const validateUserInput = getCurrentDestination(this._destination, userInputValue);
+    const validateUserInput = getCurrentDestination(this._destinations, userInputValue);
 
     if (validateUserInput === undefined) {
       throw new Error('Такого города нет!');
@@ -362,7 +359,7 @@ export default class FormEdit extends SmartView {
     this._callback.typeCityChange(city);
     const update = {
       city: city,
-      destination: getCurrentDestination(this._destination, city),
+      destination: getCurrentDestination(this._destinations, city),
     };
 
     this.updateState(update);
