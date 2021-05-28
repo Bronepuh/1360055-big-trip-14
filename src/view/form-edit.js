@@ -83,16 +83,41 @@ const generatePicturesList = function (destination) {
   return newPicturesList;
 };
 
+// генерация кнопки delete/cancel
+const generateDeleteBtn = function (hasArrowButton, isDeleting, isDisabled) {
+  let deleteBtn = '';
+  if (hasArrowButton && !isDeleting) {
+    deleteBtn = 'Delete';
+  } else if (hasArrowButton && isDeleting) {
+    deleteBtn = 'Deleting...';
+  } else {
+    deleteBtn = 'Cancel';
+  }
+  return `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${deleteBtn}</button>`;
+};
+
+// генерация кнопки save
+const generateSaveBtn = function (isSaving, isDisabled) {
+  let saveBtnBtn = '';
+  if (isSaving) {
+    saveBtnBtn = 'Saving...';
+  } else {
+    saveBtnBtn = 'Save';
+  }
+  return `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${saveBtnBtn}</button>`;
+};
+
 const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations) => {
 
-  const { basePrice, dateFrom, dateTo, offers, type, destination } = state;
+  const { basePrice, dateFrom, dateTo, offers, type, destination, isDeleting, isDisabled, isSaving } = state;
   const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
   const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
   const offersItems = generateOffersList(pointsTypes, type, offers);
   const itemTypes = generateTypeList(pointsTypes, state);
   const eventPhotos = generatePicturesList(destination);
-  const canDelete = Boolean(state.id);
   const canFold = hasArrowButton;
+  const deleteBtn = generateDeleteBtn(hasArrowButton, isDeleting, isDisabled);
+  const saveBtn = generateSaveBtn(isSaving, isDisabled);
 
   const citysList = generateCitysList(destinations);
 
@@ -145,8 +170,8 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${canDelete ? 'Delete' : 'Cancel'}</button>
+          ${saveBtn}
+          ${deleteBtn}
           ${canFold ? `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
           </button>` : ''}
@@ -184,6 +209,9 @@ export default class FormEdit extends SmartView {
       {
         currentType: getCurrentType(pointsTypes, point.type),
         currentDestination: getCurrentDestination(destinations, point.destination.city),
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
       },
     );
   }
@@ -192,6 +220,9 @@ export default class FormEdit extends SmartView {
     point = Object.assign({}, point);
     delete point.currentType;
     delete point.currentDestination;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
     return point;
   }
 
@@ -201,7 +232,6 @@ export default class FormEdit extends SmartView {
     this._point = point;
     this._destinations = destinations;
     this._pointsTypes = pointsTypes;
-
 
     this._changeData = changeData;
     this._hasArrowButton = hasArrowButton;
@@ -228,7 +258,7 @@ export default class FormEdit extends SmartView {
 
   getTemplate() {
 
-    return createFormEditTemplate(this._pointsTypes, this._state, this._hasArrowButton, this._destinations);
+    return createFormEditTemplate(this._pointsTypes, this._state, this._hasArrowButton, this._destinations, this._isDeleting, this._isDisabled);
   }
 
   // установка внутренних обработчиков и их восстановление

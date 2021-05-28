@@ -10,15 +10,7 @@ const getNewPoint = function () {
     'dateFrom': dayjs(),
     'dateTo': dayjs().add(2, 'hour'),
     'isFavorite': false,
-    'offers': [
-      {
-        'title': 'Add luggage',
-        'price': 30,
-      }, {
-        'title': 'Switch to comfort class',
-        'price': 100,
-      },
-    ],
+    'offers': [],
     'type': 'taxi',
     'destination':
     {
@@ -33,8 +25,6 @@ const getNewPoint = function () {
     },
   };
 };
-
-const newPoint = getNewPoint();
 
 export default class NewPointPresenter {
   constructor() {
@@ -57,7 +47,7 @@ export default class NewPointPresenter {
     this._pointTypesModel = pointTypesModel;
 
 
-    this._formEditComponent = new FormEditView(newPoint, this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, false);
+    this._formEditComponent = new FormEditView(getNewPoint(), this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, false);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
     this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);
@@ -72,6 +62,13 @@ export default class NewPointPresenter {
   destroy() {
     document.removeEventListener('keydown', this._escKeyDownHandler);
     remove(this._formEditComponent);
+  }
+
+  setSaving() {
+    this._formEditComponent.updateState({
+      isDisabled: true,
+      isSaving: true,
+    });
   }
 
   _escKeyDownHandler(evt) {
