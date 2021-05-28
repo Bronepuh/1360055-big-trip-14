@@ -1,6 +1,6 @@
 import FormEditView from '../view/form-edit';
+import LoadingView from '../view/loading';
 import EventsPointView from '../view/events-point';
-import { POINTS_TYPES, DESTINATION } from '../mock/points';
 import { render, RenderPosition, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../utils/const';
 
@@ -10,11 +10,13 @@ const Mode = {
 };
 
 export default class PointPresenter {
-  constructor(eventList, changeData, changeMode, handleOpenEditForm) {
+  constructor(eventList, changeData, changeMode, handleOpenEditForm, destinationsModel, pointTypesModel) {
     this._eventList = eventList;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._handleOpenEditForm = handleOpenEditForm;
+    this._destinationsModel = destinationsModel;
+    this._pointTypesModel = pointTypesModel;
 
     this._eventPointComponent = null;
     this._formEditComponent = null;
@@ -38,8 +40,9 @@ export default class PointPresenter {
     const prevEventPointComponent = this._eventPointComponent;
     const prevFormEditComponent = this._formEditComponent;
 
+    this._loadingComponent = new LoadingView();
     this._eventPointComponent = new EventsPointView(this._point);
-    this._formEditComponent = new FormEditView(POINTS_TYPES, this._point, DESTINATION, this._changeData, true);
+    this._formEditComponent = new FormEditView(this._point, this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, true);
 
     this._eventPointComponent.setPointClickHandler(this._handlePointClick);
     this._eventPointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -50,6 +53,11 @@ export default class PointPresenter {
     this._formEditComponent.setTypeCityChangeHandler(this._handleTypeCityClick);
     this._formEditComponent.setPointDeleteHandler(this._handlePointDelete);
     this._formEditComponent.setOffersChangeHandler(this._handleOffersChange);
+
+    if (this._isLoading) {
+      render(this._eventList, this._loadingComponent, RenderPosition.BEFOREEND);
+      return;
+    }
 
     if (prevEventPointComponent === null || prevFormEditComponent === null) {
       render(this._eventList, this._eventPointComponent, RenderPosition.BEFOREEND);

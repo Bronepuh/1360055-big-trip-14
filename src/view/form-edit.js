@@ -3,7 +3,6 @@ import he from 'he';
 import SmartView from './smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import { DESTINATION } from '../mock/points';
 
 // генерация дополнительных опций
 const getCurrentType = function (pointsTypes, type) {
@@ -18,13 +17,13 @@ const getCurrentType = function (pointsTypes, type) {
   }
 };
 
-const getCurrentDestination = function (destination, city) {
-  for (let i = 0; i < destination.length; i++) {
-    if (destination[i].city === city) {
+const getCurrentDestination = function (destinations, city) {
+  for (let i = 0; i < destinations.length; i++) {
+    if (destinations[i].city === city) {
       const currentDestination = {
-        city: city,
-        description: destination[i].description,
-        pictures: destination[i].pictures,
+        city: destinations[i].city,
+        description: destinations[i].description,
+        pictures: destinations[i].pictures,
       };
       return currentDestination;
     }
@@ -66,10 +65,10 @@ const generateTypeList = function (pointsTypes, state) {
 };
 
 // генерация городов
-const generateCitysList = function (DESTINATION) {
+const generateCitysList = function (destinations) {
   let newCitysList = '';
-  for (let i = 0; i < DESTINATION.length; i++) {
-    newCitysList += `<option value="${he.encode(DESTINATION[i].city)}"></option>`;
+  for (let i = 0; i < destinations.length; i++) {
+    newCitysList += `<option value="${he.encode(destinations[i].city)}"></option>`;
   }
 
   return newCitysList;
@@ -79,12 +78,12 @@ const generateCitysList = function (DESTINATION) {
 const generatePicturesList = function (destination) {
   let newPicturesList = '';
   for (let i = 0; i < destination.pictures.length; i++) {
-    newPicturesList += `<img class="event__photo" src="${destination.pictures[i]}" alt="Event photo">`;
+    newPicturesList += `<img class="event__photo" src="${destination.pictures[i].src}" alt="Event photo">`;
   }
   return newPicturesList;
 };
 
-const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
+const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations) => {
 
   const { basePrice, dateFrom, dateTo, offers, type, destination } = state;
   const timeStart = dayjs(dateFrom).format('YY[/]MM[/]DD HH[:]mm');
@@ -95,7 +94,7 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
   const canDelete = Boolean(state.id);
   const canFold = hasArrowButton;
 
-  const citysList = generateCitysList(DESTINATION);
+  const citysList = generateCitysList(destinations);
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -178,13 +177,13 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton) => {
 
 export default class FormEdit extends SmartView {
 
-  static parsePointToState(pointsTypes, point, destination) {
+  static parsePointToState(point, destinations, pointsTypes) {
     return Object.assign(
       {},
       point,
       {
         currentType: getCurrentType(pointsTypes, point.type),
-        currentDestination: getCurrentDestination(destination, point.destination.city),
+        currentDestination: getCurrentDestination(destinations, point.destination.city),
       },
     );
   }
@@ -196,15 +195,18 @@ export default class FormEdit extends SmartView {
     return point;
   }
 
-  constructor(pointsTypes, point, destination, changeData, hasArrowButton) {
+  constructor(point, destinations, pointsTypes, changeData, hasArrowButton) {
     super();
+
     this._point = point;
+    this._destinations = destinations;
     this._pointsTypes = pointsTypes;
-    this._destination = destination;
+
+
     this._changeData = changeData;
     this._hasArrowButton = hasArrowButton;
 
-    this._state = FormEdit.parsePointToState(this._pointsTypes, this._point, this._destination);
+    this._state = FormEdit.parsePointToState(this._point, this._destinations, this._pointsTypes);
 
     this._dateFromPicker = null;
     this._dateToPicker = null;
@@ -217,7 +219,6 @@ export default class FormEdit extends SmartView {
     this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
     this._pointDeleteHandler = this._pointDeleteHandler.bind(this);
-    this._newPointDeleteHandler = this._newPointDeleteHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
@@ -226,7 +227,8 @@ export default class FormEdit extends SmartView {
   }
 
   getTemplate() {
-    return createFormEditTemplate(this._pointsTypes, this._state, this._hasArrowButton);
+
+    return createFormEditTemplate(this._pointsTypes, this._state, this._hasArrowButton, this._destinations);
   }
 
   // установка внутренних обработчиков и их восстановление
@@ -242,7 +244,6 @@ export default class FormEdit extends SmartView {
     this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
     this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
     this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
   }
 
   restoreHandlers() {
@@ -337,7 +338,7 @@ export default class FormEdit extends SmartView {
   setCity(city) {
     const update = {
       city: city,
-      destination: getCurrentDestination(this._destination, city),
+      destination: getCurrentDestination(this._destinations, city),
     };
 
     this.updateState(update);
@@ -346,17 +347,18 @@ export default class FormEdit extends SmartView {
   _typeCityChangeHandler(evt) {
     evt.preventDefault();
     const userInputValue = evt.target.value;
-    const validateUserInput = getCurrentDestination(this._destination, userInputValue);
+    const validateUserInput = getCurrentDestination(this._destinations, userInputValue);
+
+    let city = evt.target.value || this._state.destination.city;
 
     if (validateUserInput === undefined) {
-      throw new Error('Такого города нет!');
+      city = 'Amsterdam';
     }
 
-    const city = evt.target.value || this._state.destination.city;
     this._callback.typeCityChange(city);
     const update = {
       city: city,
-      destination: getCurrentDestination(this._destination, city),
+      destination: getCurrentDestination(this._destinations, city),
     };
 
     this.updateState(update);
@@ -429,15 +431,6 @@ export default class FormEdit extends SmartView {
 
   setPointDeleteHandler(callback) {
     this._callback.pointDelete = callback;
-  }
-
-  // удаление несохраненной новой точки маршрута
-  _newPointDeleteHandler() {
-    this._callback.newPointDelete();
-  }
-
-  setNewPointDeleteHandler(callback) {
-    this._callback.newPointDelete = callback;
   }
 
   // сохранение измененного стейта через сабмит
