@@ -428,7 +428,6 @@ export default class FormEdit extends SmartView {
   }
 
   // изменение дополнительных офферов
-
   toggleOffers(offerTitle) {
 
     const existingIndex = this._state.offers.findIndex((offer) => {

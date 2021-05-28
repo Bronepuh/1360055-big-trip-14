@@ -144,8 +144,6 @@ export default class PointPresenter {
       UpdateType.MINOR,
       Object.assign({}, point),
     );
-
-    // this._replaceFormToPoint();
   }
 
   _handleFavoriteClick() {
