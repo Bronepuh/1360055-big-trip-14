@@ -6,12 +6,11 @@ import EventsFiltersView from '../view/events-filters';
 import EventsListEmptyView from '../view/event-list-empty';
 import EventsListView from '../view/events-list';
 import LoadingView from '../view/loading';
-import PointPresenter from './point-presenter';
+import PointPresenter, {State as PointPresenterViewState} from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
 import { remove, render, RenderPosition } from '../utils/render';
 import { SortType, UserAction, UpdateType } from '../utils/const';
 import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/common';
-
 
 export default class TripPresenter {
   constructor(statContainer, tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer, pointsModel, destinationsModel, pointTypesModel, api) {
@@ -89,16 +88,19 @@ export default class TripPresenter {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
         this._api.updatePoint(update).then((response) => {
           this._pointsModel.updatePoint(updateType, response);
         });
         break;
       case UserAction.ADD_POINT:
+        this._newPointPresenter.setSaving();
         this._api.addPoint(update).then((response) => {
           this._pointsModel.addPoint(updateType, response);
         });
         break;
       case UserAction.DELETE_POINT:
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
         this._api.deletePoint(update).then(() => {
           this._pointsModel.deletePoint(updateType, update);
         });
@@ -121,6 +123,7 @@ export default class TripPresenter {
         break;
       case UpdateType.INIT:
         this._isLoading = false;
+
         remove(this._loadingComponent);
         this._renderTrip();
         break;
@@ -184,6 +187,7 @@ export default class TripPresenter {
   }
 
   _renderLoading() {
+    render(this._eventMainContainer, this._eventsListViewComponent, RenderPosition.BEFOREEND);
     render(this._eventsListViewComponent, this._loadingComponent, RenderPosition.AFTERBEGIN);
   }
 

@@ -1,5 +1,3 @@
-// export const POINTS_COUNT = 10;
-
 export const SortType = {
   DAY: 'day',
   TIME: 'time',
