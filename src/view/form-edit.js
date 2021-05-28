@@ -3,7 +3,6 @@ import he from 'he';
 import SmartView from './smart';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-// import { DESTINATION } from '../mock/points';
 
 // генерация дополнительных опций
 const getCurrentType = function (pointsTypes, type) {
@@ -245,7 +244,6 @@ export default class FormEdit extends SmartView {
     this.getElement().querySelector('.event__input--price').addEventListener('input', this._formPriceHandler);
     this.getElement().querySelector('.event__available-offers').addEventListener('change', this._offersChangeHandler);
     this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._pointDeleteHandler);
-    // this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._newPointDeleteHandler);
   }
 
   restoreHandlers() {
@@ -351,11 +349,12 @@ export default class FormEdit extends SmartView {
     const userInputValue = evt.target.value;
     const validateUserInput = getCurrentDestination(this._destinations, userInputValue);
 
+    let city = evt.target.value || this._state.destination.city;
+
     if (validateUserInput === undefined) {
-      throw new Error('Такого города нет!');
+      city = 'Amsterdam';
     }
 
-    const city = evt.target.value || this._state.destination.city;
     this._callback.typeCityChange(city);
     const update = {
       city: city,
@@ -433,15 +432,6 @@ export default class FormEdit extends SmartView {
   setPointDeleteHandler(callback) {
     this._callback.pointDelete = callback;
   }
-
-  // удаление несохраненной новой точки маршрута
-  // _newPointDeleteHandler() {
-  //   this._callback.newPointDelete();
-  // }
-
-  // setNewPointDeleteHandler(callback) {
-  //   this._callback.newPointDelete = callback;
-  // }
 
   // сохранение измененного стейта через сабмит
   _formSubmitHandler(evt) {

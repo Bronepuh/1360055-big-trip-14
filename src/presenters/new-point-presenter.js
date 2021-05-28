@@ -1,8 +1,6 @@
 import FormEditView from '../view/form-edit';
-// import { POINTS_TYPES, DESTINATION } from '../mock/points';
 import { render, RenderPosition, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../utils/const';
-// import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
 
 
@@ -36,6 +34,8 @@ const getNewPoint = function () {
   };
 };
 
+const newPoint = getNewPoint();
+
 export default class NewPointPresenter {
   constructor() {
     this._formEditComponent = null;
@@ -57,7 +57,7 @@ export default class NewPointPresenter {
     this._pointTypesModel = pointTypesModel;
 
 
-    this._formEditComponent = new FormEditView(getNewPoint(), this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, false);
+    this._formEditComponent = new FormEditView(newPoint, this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, false);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
     this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);

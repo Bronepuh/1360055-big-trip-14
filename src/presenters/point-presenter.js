@@ -1,8 +1,6 @@
 import FormEditView from '../view/form-edit';
-// import EventsListEmptyView from '../view/event-list-empty';
 import LoadingView from '../view/loading';
 import EventsPointView from '../view/events-point';
-// import { POINTS_TYPES, DESTINATION } from '../mock/points';
 import { render, RenderPosition, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../utils/const';
 
@@ -19,10 +17,6 @@ export default class PointPresenter {
     this._handleOpenEditForm = handleOpenEditForm;
     this._destinationsModel = destinationsModel;
     this._pointTypesModel = pointTypesModel;
-
-    // console.log(this._constModel);
-    // this._destinations = constModel.getDestinations();
-    // this._pointTypes = constModel.getPointsTypes();
 
     this._eventPointComponent = null;
     this._formEditComponent = null;

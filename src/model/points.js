@@ -1,4 +1,3 @@
-// import { POINTS_TYPES } from '../mock/points.js';
 import Observer from '../utils/observer.js';
 
 export default class Points extends Observer {
