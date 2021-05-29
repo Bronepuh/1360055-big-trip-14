@@ -1,20 +1,21 @@
 import AbstractView from './abstract';
+import { FilterType } from '../utils/const';
 
-const createSiteFiltersTemplate = () => {
+const createSiteFiltersTemplate = (currentFilterType) => {
   return `<form class="trip-filters" action="#" method="get">
   <div class="trip-filters__filter">
-    <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked>
-    <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
+    <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" ${currentFilterType === FilterType.EVERYTHING ? 'checked' : ''}>
+    <label class="trip-filters__filter-label" for="filter-everything">${FilterType.EVERYTHING}</label>
   </div>
 
   <div class="trip-filters__filter">
-    <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future">
-    <label class="trip-filters__filter-label" for="filter-future">Future</label>
+    <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future" ${currentFilterType === FilterType.FUTURE ? 'checked' : ''}>
+    <label class="trip-filters__filter-label" for="filter-future">${FilterType.FUTURE}</label>
   </div>
 
   <div class="trip-filters__filter">
-    <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past">
-    <label class="trip-filters__filter-label" for="filter-past">Past</label>
+    <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past" ${currentFilterType === FilterType.PAST ? 'checked' : ''}>
+    <label class="trip-filters__filter-label" for="filter-past">${FilterType.PAST}</label>
   </div>
 
   <button class="visually-hidden" type="submit">Accept filter</button>
@@ -22,7 +23,27 @@ const createSiteFiltersTemplate = () => {
 };
 
 export default class SiteFilters extends AbstractView {
+  constructor(currentFilterType) {
+    super();
+    this.currentFilterType = currentFilterType;
+
+    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+  }
+
   getTemplate() {
-    return createSiteFiltersTemplate();
+    return createSiteFiltersTemplate(this.currentFilterType);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    if (evt.target.tagName !== 'LABEL') {
+      return;
+    }
+    const type = evt.target.textContent;
+    this._callback.filterTypeChange(type);
+  }
+
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement().addEventListener('click', this._filterTypeChangeHandler);
   }
 }

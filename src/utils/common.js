@@ -42,6 +42,15 @@ export const sortPointDay = (pointA, pointB) => {
   return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 };
 
+
+export const filterPointFuture = (point) => {
+  return point.dateFrom > dayjs();
+};
+
+export const filterPointPast = (point) => {
+  return point.dateFrom < dayjs();
+};
+
 export const sortPointTime = (pointA, pointB) => {
 
   const fromA = dayjs(pointA.dateFrom);

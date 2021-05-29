@@ -1,7 +1,7 @@
 import { UpdateType } from './utils/const';
 import TripPresenter from './presenters/trip-presenter';
 import PointsModel from './model/points';
-import DestinationsModel from './model/destinstions';
+import DestinationsModel from './model/destinations';
 import PointTypesModel from './model/point-types';
 import Api from './api.js';
 

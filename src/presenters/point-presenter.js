@@ -1,5 +1,4 @@
 import FormEditView from '../view/form-edit';
-import LoadingView from '../view/loading';
 import EventsPointView from '../view/events-point';
 import { render, RenderPosition, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../utils/const';
@@ -40,7 +39,6 @@ export default class PointPresenter {
     const prevEventPointComponent = this._eventPointComponent;
     const prevFormEditComponent = this._formEditComponent;
 
-    this._loadingComponent = new LoadingView();
     this._eventPointComponent = new EventsPointView(this._point);
     this._formEditComponent = new FormEditView(this._point, this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, true);
 
@@ -53,11 +51,6 @@ export default class PointPresenter {
     this._formEditComponent.setTypeCityChangeHandler(this._handleTypeCityClick);
     this._formEditComponent.setPointDeleteHandler(this._handlePointDelete);
     this._formEditComponent.setOffersChangeHandler(this._handleOffersChange);
-
-    if (this._isLoading) {
-      render(this._eventList, this._loadingComponent, RenderPosition.BEFOREEND);
-      return;
-    }
 
     if (prevEventPointComponent === null || prevFormEditComponent === null) {
       render(this._eventList, this._eventPointComponent, RenderPosition.BEFOREEND);
