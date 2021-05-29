@@ -10,7 +10,7 @@ import PointPresenter, {State as PointPresenterViewState} from './point-presente
 import NewPointPresenter from './new-point-presenter';
 import { remove, render, RenderPosition } from '../utils/render';
 import { SortType, FilterType, UserAction, UpdateType } from '../utils/const';
-import { sortPointDay, filterPointFuture, filterPointPast, sortPointTime, sortPointPrice } from '../utils/common';
+import { sortPointDay, filterPointFuture, filterPointPast, sortPointTime, sortPointPrice, filterPointEverything } from '../utils/common';
 
 export default class TripPresenter {
   constructor(statContainer, tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer, pointsModel, destinationsModel, pointTypesModel, api) {
@@ -67,25 +67,35 @@ export default class TripPresenter {
   }
 
   _getPoints() {
+
+    let filterCb = null;
+    let sortCB = null;
+
     switch (this._currentFilterType) {
       case FilterType.EVERYTHING:
-        return this._pointsModel.getPoints().slice();
+        filterCb = filterPointEverything;
+        break;
       case FilterType.FUTURE:
-        return this._pointsModel.getPoints().slice().filter(filterPointFuture);
+        filterCb = filterPointFuture;
+        break;
       case FilterType.PAST:
-        return this._pointsModel.getPoints().slice().filter(filterPointPast);
+        filterCb = filterPointPast;
+        break;
     }
 
     switch (this._currentSortType) {
       case SortType.DAY:
-        return this._pointsModel.getPoints().slice().sort(sortPointDay);
+        sortCB = sortPointDay;
+        break;
       case SortType.TIME:
-        return this._pointsModel.getPoints().slice().sort(sortPointTime);
+        sortCB = sortPointTime;
+        break;
       case SortType.PRICE:
-        return this._pointsModel.getPoints().slice().sort(sortPointPrice);
+        sortCB = sortPointPrice;
+        break;
     }
 
-    return this._pointsModel.getPoints();
+    return this._pointsModel.getPoints().filter(filterCb).sort(sortCB);
   }
 
   _handleOpenEditForm() {
@@ -149,6 +159,7 @@ export default class TripPresenter {
     }
 
     this._currentFilterType = filterType;
+    this._currentSortType = SortType.DAY;
 
     this._clearPoints();
 
