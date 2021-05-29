@@ -70,7 +70,7 @@ export default class TripPresenter {
   _getPoints() {
 
     let filterCb = null;
-    let sortCB = null;
+    let sortCb = null;
 
     switch (this._currentFilterType) {
       case FilterType.EVERYTHING:
@@ -86,17 +86,21 @@ export default class TripPresenter {
 
     switch (this._currentSortType) {
       case SortType.DAY:
-        sortCB = sortPointDay;
+        sortCb = sortPointDay;
         break;
       case SortType.TIME:
-        sortCB = sortPointTime;
+        sortCb = sortPointTime;
         break;
       case SortType.PRICE:
-        sortCB = sortPointPrice;
+        sortCb = sortPointPrice;
         break;
     }
 
-    return this._pointsModel.getPoints().filter(filterCb).sort(sortCB);
+    const points = this._pointsModel.getPoints().filter(filterCb);
+    if (sortCb) {
+      points.sort(sortCb);
+    }
+    return points;
   }
 
   _handleOpenEditForm() {
