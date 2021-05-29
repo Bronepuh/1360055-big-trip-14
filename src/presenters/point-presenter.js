@@ -1,5 +1,4 @@
 import FormEditView from '../view/form-edit';
-import LoadingView from '../view/loading';
 import EventsPointView from '../view/events-point';
 import { render, RenderPosition, replace, remove } from '../utils/render';
 import { UserAction, UpdateType } from '../utils/const';
@@ -45,7 +44,6 @@ export default class PointPresenter {
     const prevEventPointComponent = this._eventPointComponent;
     const prevFormEditComponent = this._formEditComponent;
 
-    this._loadingComponent = new LoadingView();
     this._eventPointComponent = new EventsPointView(this._point);
     this._formEditComponent = new FormEditView(this._point, this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, true);
 

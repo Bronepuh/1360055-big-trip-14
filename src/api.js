@@ -1,5 +1,5 @@
 import PointsModel from './model/points';
-import DestinationsModel from './model/destinstions';
+import DestinationsModel from './model/destinations';
 
 const Method = {
   GET: 'GET',

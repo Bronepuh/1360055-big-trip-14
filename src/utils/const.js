@@ -4,6 +4,12 @@ export const SortType = {
   PRICE: 'price',
 };
 
+export const FilterType = {
+  EVERYTHING: 'Everything',
+  FUTURE: 'Future',
+  PAST: 'Past',
+};
+
 export const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
   ADD_POINT: 'ADD_POINT',

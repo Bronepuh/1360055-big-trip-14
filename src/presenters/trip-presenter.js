@@ -9,8 +9,8 @@ import LoadingView from '../view/loading';
 import PointPresenter, {State as PointPresenterViewState} from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
 import { remove, render, RenderPosition } from '../utils/render';
-import { SortType, UserAction, UpdateType } from '../utils/const';
-import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/common';
+import { SortType, FilterType, UserAction, UpdateType } from '../utils/const';
+import { sortPointDay, filterPointFuture, filterPointPast, sortPointTime, sortPointPrice } from '../utils/common';
 
 export default class TripPresenter {
   constructor(statContainer, tripMainContainer, siteMenuContainer, siteFiltersContainer, eventMainContainer, pointsModel, destinationsModel, pointTypesModel, api) {
@@ -21,6 +21,8 @@ export default class TripPresenter {
 
     this._pointPresenter = {};
     this._currentSortType = SortType.DAY;
+    this._currentFilterType = FilterType.EVERYTHING;
+    this._siteFiltersViewComponent = null;
     this._eventsFiltersViewComponent = null;
     this._isLoading = true;
     this._api = api;
@@ -34,7 +36,7 @@ export default class TripPresenter {
     this._routeAndPriceViewComponent = new RouteAndPriceView();
     this._siteMenuViewComponent = new SiteMenuView();
     this._statsViewComponent = new StatsView(this._pointsModel);
-    this._siteFiltersViewComponent = new SiteFiltersView();
+
     this._eventsListEmptyViewComponent = new EventsListEmptyView();
     this._eventsListViewComponent = new EventsListView();
     this._loadingComponent = new LoadingView();
@@ -42,6 +44,7 @@ export default class TripPresenter {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
     this._handleOpenEditForm = this._handleOpenEditForm.bind(this);
@@ -56,12 +59,22 @@ export default class TripPresenter {
     render(this._siteMenuContainer, this._siteMenuViewComponent, RenderPosition.BEFOREEND);
     this._siteMenuViewComponent.setMenuClickHandler(this._handleSiteMenuClick);
 
+    this._siteFiltersViewComponent = new SiteFiltersView(this._currentFilterType);
     render(this._siteFiltersContainer, this._siteFiltersViewComponent, RenderPosition.BEFOREEND);
+    this._siteFiltersViewComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
     this._renderTrip();
   }
 
   _getPoints() {
+    switch (this._currentFilterType) {
+      case FilterType.EVERYTHING:
+        return this._pointsModel.getPoints().slice();
+      case FilterType.FUTURE:
+        return this._pointsModel.getPoints().slice().filter(filterPointFuture);
+      case FilterType.PAST:
+        return this._pointsModel.getPoints().slice().filter(filterPointPast);
+    }
 
     switch (this._currentSortType) {
       case SortType.DAY:
@@ -130,6 +143,21 @@ export default class TripPresenter {
     }
   }
 
+  _handleFilterTypeChange(filterType) {
+    if (this._currentFilterType === filterType) {
+      return;
+    }
+
+    this._currentFilterType = filterType;
+
+    this._clearPoints();
+
+    this._renderSiteFilters(this._currentFilterType);
+    this._renderEventsFilters(this._currentSortType);
+    this._renderEventList();
+    this._renderPoints(this._getPoints(this._currentFilterType));
+  }
+
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
@@ -139,6 +167,7 @@ export default class TripPresenter {
 
     this._clearPoints();
 
+    this._renderSiteFilters(this._currentFilterType);
     this._renderEventsFilters(this._currentSortType);
     this._renderEventList();
     this._renderPoints(this._getPoints(this._currentSortType));
@@ -151,7 +180,8 @@ export default class TripPresenter {
       case 'Stats':
         remove(this._statsViewComponent);
         render(this._statContainer, this._statsViewComponent, RenderPosition.BEFOREEND);
-        this._statsViewComponent._setCharts();
+        this._statsViewComponent.updateChart();
+        remove(this._siteFiltersViewComponent);
         remove(this._eventsFiltersViewComponent);
         remove(this._eventsListViewComponent);
         break;
@@ -161,6 +191,16 @@ export default class TripPresenter {
         this._renderTrip();
         break;
     }
+  }
+
+  _renderSiteFilters() {
+    if (this._siteFiltersViewComponent) {
+      remove(this._siteFiltersViewComponent);
+    }
+
+    this._siteFiltersViewComponent = new SiteFiltersView(this._currentFilterType);
+    render(this._siteFiltersContainer, this._siteFiltersViewComponent, RenderPosition.BEFOREEND);
+    this._siteFiltersViewComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
   }
 
   _renderEventsFilters() {
@@ -201,6 +241,7 @@ export default class TripPresenter {
       .forEach((presenter) => presenter.destroy());
     this._pointPresenter = {};
 
+    remove(this._siteFiltersViewComponent);
     remove(this._eventsFiltersViewComponent);
     remove(this._eventsListViewComponent);
 
@@ -217,6 +258,7 @@ export default class TripPresenter {
       this._renderEmptyEventList();
     }
 
+    this._renderSiteFilters();
     this._renderEventsFilters();
     this._renderEventList();
     this._renderPoints(this._pointsModel.getPoints());
@@ -231,6 +273,8 @@ export default class TripPresenter {
       .forEach((presenter) => presenter.resetView());
 
     this._currentSortType = SortType.DAY;
+    this._currentFilterType = FilterType.EVERYTHING;
+    this._renderSiteFilters();
     this._renderEventsFilters();
   }
 

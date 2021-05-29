@@ -294,7 +294,7 @@ export default class Stats extends SmartView {
     return createStatisticsTemplate();
   }
 
-  _setCharts() {
+  updateChart() {
     const points = this._pointsModel.getPoints();
 
     if (this._moneyCart !== null) {
