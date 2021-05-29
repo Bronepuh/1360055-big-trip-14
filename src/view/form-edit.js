@@ -263,7 +263,7 @@ export default class FormEdit extends SmartView {
       this.getElement().querySelector('#event-start-time-1'),
       {
         dateFormat: 'd/m/y H:i',
-        time_24hr: true,
+        ['time_24hr']: true,
         enableTime: true,
         minDate: 'today',
         defaultDate: new Date(this._state.dateFrom),
