@@ -1,6 +1,5 @@
 import SiteMenuView from '../view/site-menu';
 import StatsView from '../view/stats';
-import RouteAndPriceView from '../view/route-and-price';
 import SiteFiltersView from '../view/site-filters';
 import EventsFiltersView from '../view/events-filters';
 import EventsListEmptyView from '../view/event-list-empty';
@@ -34,7 +33,6 @@ export default class TripPresenter {
     this._siteFiltersContainer = siteFiltersContainer;
     this._eventMainContainer = eventMainContainer;
 
-    this._routeAndPriceViewComponent = new RouteAndPriceView();
     this._siteMenuViewComponent = new SiteMenuView();
     this._statsViewComponent = new StatsView(this._pointsModel);
 
@@ -56,7 +54,6 @@ export default class TripPresenter {
   }
 
   init() {
-    render(this._tripMainContainer, this._routeAndPriceViewComponent, RenderPosition.AFTERBEGIN);
     render(this._siteMenuContainer, this._siteMenuViewComponent, RenderPosition.BEFOREEND);
     this._siteMenuViewComponent.setMenuClickHandler(this._handleSiteMenuClick);
 
@@ -167,7 +164,7 @@ export default class TripPresenter {
     this._renderSiteFilters(this._currentFilterType);
     this._renderEventsFilters(this._currentSortType);
     this._renderEventList();
-    this._renderPoints(this._getPoints(this._currentFilterType));
+    this._renderPoints(this._getPoints());
   }
 
   _handleSortTypeChange(sortType) {
@@ -175,19 +172,18 @@ export default class TripPresenter {
       return;
     }
 
-    this._currentSortType = sortType;
+    this._currentSortType = sortType || SortType.DAY;
 
     this._clearPoints();
 
     this._renderSiteFilters(this._currentFilterType);
     this._renderEventsFilters(this._currentSortType);
     this._renderEventList();
-    this._renderPoints(this._getPoints(this._currentSortType));
+    this._renderPoints(this._getPoints());
   }
 
   _handleSiteMenuClick(menuItem) {
     this._siteMenuViewComponent.setMenuItem(menuItem);
-
     switch (menuItem.textContent) {
       case 'Stats':
         remove(this._statsViewComponent);
@@ -199,6 +195,7 @@ export default class TripPresenter {
         break;
       case 'Table':
         remove(this._statsViewComponent);
+        this._currentSortType = SortType.DAY;
         this._clearPoints();
         this._renderTrip();
         break;
@@ -234,6 +231,7 @@ export default class TripPresenter {
 
   _renderPoint(point) {
     const pointPresenter = new PointPresenter(this._eventsListViewComponent, this._handleViewAction, this._handleModeChange, this._handleOpenEditForm, this._destinationsModel, this._pointTypesModel);
+
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }
@@ -265,14 +263,14 @@ export default class TripPresenter {
       return;
     }
 
-    if (this._pointsModel.getPoints().length === 0) {
+    if (this._getPoints().length === 0) {
       this._renderEmptyEventList();
     }
 
     this._renderSiteFilters();
     this._renderEventsFilters();
     this._renderEventList();
-    this._renderPoints(this._pointsModel.getPoints());
+    this._renderPoints(this._getPoints());
   }
 
   createPoint() {

@@ -4,7 +4,7 @@ import { UserAction, UpdateType } from '../utils/const';
 import dayjs from 'dayjs';
 
 
-const getNewPoint = function () {
+const getNewPoint = function (destination) {
   return {
     'basePrice': 0,
     'dateFrom': dayjs(),
@@ -20,21 +20,9 @@ const getNewPoint = function () {
       },
     ],
     'type': 'taxi',
-    'destination':
-    {
-      'city': 'Amsterdam',
-      'pictures': [
-        {
-          src: 'http://picsum.photos/248/152?r=4.jpg',
-          description: 'Chamonix parliament building',
-        },
-      ],
-      'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    },
+    'destination': destination,
   };
 };
-
-const newPoint = getNewPoint();
 
 export default class NewPointPresenter {
   constructor() {
@@ -56,8 +44,11 @@ export default class NewPointPresenter {
     this._destinationsModel = destinationsModel;
     this._pointTypesModel = pointTypesModel;
 
+    const allDestinations = this._destinationsModel.getDestinations();
 
-    this._formEditComponent = new FormEditView(newPoint, this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, false);
+    const newPoint = getNewPoint(allDestinations[0]);
+
+    this._formEditComponent = new FormEditView(newPoint, allDestinations, this._pointTypesModel.getPointsTypes(), this._changeData, false);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
     this._formEditComponent.setTypePointChangeHandler(this._handleTypePointClick);

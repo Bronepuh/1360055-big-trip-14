@@ -17,9 +17,12 @@ const getCurrentType = function (pointsTypes, type) {
   }
 };
 
-const getCurrentDestination = function (destinations, city) {
+const getCurrentDestination = function (destinations, destination) {
+  if (!destination) {
+    return null;
+  }
   for (let i = 0; i < destinations.length; i++) {
-    if (destinations[i].city === city) {
+    if (destinations[i].city === destination.city) {
       const currentDestination = {
         city: destinations[i].city,
         description: destinations[i].description,
@@ -90,9 +93,13 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
   const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
   const offersItems = generateOffersList(pointsTypes, type, offers);
   const itemTypes = generateTypeList(pointsTypes, state);
-  const eventPhotos = generatePicturesList(destination);
+
+
   const canDelete = Boolean(state.id);
   const canFold = hasArrowButton;
+  const hasDestination = Boolean(destination);
+  const currentDestinationCity = hasDestination ? destination.city : '';
+
 
   const citysList = generateCitysList(destinations);
 
@@ -118,10 +125,10 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              Flight
+              ${type}
             </label>
 
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.city}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestinationCity}" list="destination-list-1">
             <datalist id="destination-list-1">
 
               ${citysList}
@@ -160,16 +167,16 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
             </div>
           </section>
 
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${destination.description}</p>
+          ${hasDestination ? `<section class="event__section  event__section--destination">
+          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          <p class="event__destination-description">${destination.description}</p>
 
-            <div class="event__photos-container">
-              <div class="event__photos-tape">
-                ${eventPhotos}
-              </div>
+          <div class="event__photos-container">
+            <div class="event__photos-tape">
+              ${generatePicturesList(destination)}
             </div>
-          </section>
+          </div>
+        </section>` : ''}
         </section>
       </form>
     </li>`;
@@ -183,7 +190,7 @@ export default class FormEdit extends SmartView {
       point,
       {
         currentType: getCurrentType(pointsTypes, point.type),
-        currentDestination: getCurrentDestination(destinations, point.destination.city),
+        currentDestination: getCurrentDestination(destinations, point.destination),
       },
     );
   }
@@ -235,7 +242,7 @@ export default class FormEdit extends SmartView {
   _setInnerHandlers() {
     this.getElement().querySelector('.event__type-group').addEventListener('change', this._typePointChangeHandler);
 
-    if(this._hasArrowButton) {
+    if (this._hasArrowButton) {
       this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formClickHandler);
     }
 
@@ -338,7 +345,9 @@ export default class FormEdit extends SmartView {
   setCity(city) {
     const update = {
       city: city,
-      destination: getCurrentDestination(this._destinations, city),
+      destination: this._destinations.find((destination) => {
+        return destination.city === city;
+      }),
     };
 
     this.updateState(update);
@@ -346,19 +355,13 @@ export default class FormEdit extends SmartView {
 
   _typeCityChangeHandler(evt) {
     evt.preventDefault();
-    const userInputValue = evt.target.value;
-    const validateUserInput = getCurrentDestination(this._destinations, userInputValue);
-
-    let city = evt.target.value || this._state.destination.city;
-
-    if (validateUserInput === undefined) {
-      city = 'Amsterdam';
-    }
-
+    const city = evt.target.value || this._state.destination.city;
     this._callback.typeCityChange(city);
     const update = {
       city: city,
-      destination: getCurrentDestination(this._destinations, city),
+      destination: this._destinations.find((destination) => {
+        return destination.city === city;
+      }),
     };
 
     this.updateState(update);

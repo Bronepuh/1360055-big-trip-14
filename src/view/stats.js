@@ -9,17 +9,18 @@ import { countMoney, countType, countTime } from '../utils/stats';
 const BAR_HEIGHT = 55;
 
 const renderMoneyChart = (moneyCtx, points) => {
-  // Функция для отрисовки графика по цветам
   const money = countMoney(points);
-
+  money.sort((a, b) => b[1] - a[1]);
+  const labels = money.map((item) => item[0].toUpperCase());
+  const chartData = money.map((item) => item[1]);
   moneyCtx.height = BAR_HEIGHT * 9;
   const moneyChart = new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: ['TAXI', 'BUS', 'TRAIN', 'SHIP', 'TRANSPORT', 'DRIVE', 'FLIGHT', 'SIGHTSEEING', 'RESTAURANT', 'CHECK-IN'],
+      labels: labels,
       datasets: [{
-        data: [money.taxi, money.bus, money.train, money.ship, money.transport, money.drive, money.flight, money.sightseeing, money.restaurant, money['check-in']],
+        data: chartData,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -57,7 +58,6 @@ const renderMoneyChart = (moneyCtx, points) => {
             display: false,
             drawBorder: false,
           },
-          // barThickness: 44,
         }],
         xAxes: [{
           ticks: {
@@ -68,7 +68,6 @@ const renderMoneyChart = (moneyCtx, points) => {
             display: false,
             drawBorder: false,
           },
-          // minBarLength: 50,
         }],
       },
       legend: {
@@ -84,16 +83,17 @@ const renderMoneyChart = (moneyCtx, points) => {
 
 const renderTypeChart = (typeCtx, points) => {
   const types = countType(points);
-
+  types.sort((a, b) => b[1] - a[1]);
+  const labels = types.map((item) => item[0].toUpperCase());
+  const chartData = types.map((item) => item[1]);
   typeCtx.height = BAR_HEIGHT * 9;
-
   const typeChart = new Chart(typeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: ['TAXI', 'BUS', 'TRAIN', 'SHIP', 'TRANSPORT', 'DRIVE', 'FLIGHT', 'SIGHTSEEING', 'RESTAURANT', 'CHECK-IN'],
+      labels: labels,
       datasets: [{
-        data: [types.taxi, types.bus, types.train, types.ship, types.transport, types.drive, types.flight, types.sightseeing, types.restaurant, types['check-in']],
+        data: chartData,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -131,7 +131,6 @@ const renderTypeChart = (typeCtx, points) => {
             display: false,
             drawBorder: false,
           },
-          // barThickness: 44,
         }],
         xAxes: [{
           ticks: {
@@ -142,7 +141,6 @@ const renderTypeChart = (typeCtx, points) => {
             display: false,
             drawBorder: false,
           },
-          // minBarLength: 50,
         }],
       },
       legend: {
@@ -156,19 +154,19 @@ const renderTypeChart = (typeCtx, points) => {
   return typeChart;
 };
 
-
 const renderTimeChart = (timeCtx, points) => {
-  // Функция для отрисовки графика по цветам
   const time = countTime(points);
-
+  time.sort((a, b) => b[1] - a[1]);
+  const labels = time.map((item) => item[0].toUpperCase());
+  const chartData = time.map((item) => item[1]);
   timeCtx.height = BAR_HEIGHT * 9;
   const timeChart = new Chart(timeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: ['TAXI', 'BUS', 'TRAIN', 'SHIP', 'TRANSPORT', 'DRIVE', 'FLIGHT', 'SIGHTSEEING', 'RESTAURANT', 'CHECK-IN'],
+      labels: labels,
       datasets: [{
-        data: [time.taxi, time.bus, time.train, time.ship, time.transport, time.drive, time.flight, time.sightseeing, time.restaurant, time['check-in']],
+        data: chartData,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -233,7 +231,6 @@ const renderTimeChart = (timeCtx, points) => {
             display: false,
             drawBorder: false,
           },
-          // barThickness: 44,
         }],
         xAxes: [{
           ticks: {
@@ -244,7 +241,6 @@ const renderTimeChart = (timeCtx, points) => {
             display: false,
             drawBorder: false,
           },
-          // minBarLength: 50,
         }],
       },
       legend: {
@@ -317,4 +313,3 @@ export default class Stats extends SmartView {
     this._timeChart = renderTimeChart(timeCtx, points);
   }
 }
-
