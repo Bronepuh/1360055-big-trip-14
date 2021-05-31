@@ -117,16 +117,11 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
   const timeEnd = dayjs(dateTo).format('YY[/]MM[/]DD HH[:]mm');
   const offersItems = generateOffersList(pointsTypes, type, offers);
   const itemTypes = generateTypeList(pointsTypes, state);
-
-
-
-  const canDelete = Boolean(state.id);
   const canFold = hasArrowButton;
   const hasDestination = Boolean(destination);
   const currentDestinationCity = hasDestination ? destination.city : '';
-
-
-
+  const deleteBtn = generateDeleteBtn(canFold, isDeleting, isDisabled);
+  const saveBtn = generateSaveBtn(isSaving, isDeleting);
   const citysList = generateCitysList(destinations);
 
   return `<li class="trip-events__item">
@@ -177,7 +172,6 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
             </label>
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
-
           ${saveBtn}
           ${deleteBtn}
           ${canFold ? `<button class="event__rollup-btn" type="button">
@@ -187,12 +181,10 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
         <section class="event__details">
           <section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
             <div class="event__available-offers">
               ${offersItems}
             </div>
           </section>
-
           ${hasDestination ? `<section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${destination.description}</p>
@@ -216,12 +208,10 @@ export default class FormEdit extends SmartView {
       point,
       {
         currentType: getCurrentType(pointsTypes, point.type),
-
         currentDestination: getCurrentDestination(destinations, point.destination.city),
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
-
       },
     );
   }
@@ -242,15 +232,11 @@ export default class FormEdit extends SmartView {
     this._point = point;
     this._destinations = destinations;
     this._pointsTypes = pointsTypes;
-
     this._changeData = changeData;
     this._hasArrowButton = hasArrowButton;
-
     this._state = FormEdit.parsePointToState(this._point, this._destinations, this._pointsTypes);
-
     this._dateFromPicker = null;
     this._dateToPicker = null;
-
     this._formClickHandler = this._formClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formPriceHandler = this._formPriceHandler.bind(this);

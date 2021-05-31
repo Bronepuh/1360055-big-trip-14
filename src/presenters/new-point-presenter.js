@@ -37,11 +37,9 @@ export default class NewPointPresenter {
     this._pointTypesModel = pointTypesModel;
 
     const allDestinations = this._destinationsModel.getDestinations();
-
     const newPoint = getNewPoint(allDestinations[0]);
 
-
-    this._formEditComponent = new FormEditView(getNewPoint(), this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, false);
+    this._formEditComponent = new FormEditView(newPoint, this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes(), this._changeData, false);
 
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._formEditComponent.setFormPriceHandler(this._handlePriceChange);
