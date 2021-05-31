@@ -68,13 +68,13 @@ const generateTypeList = function (pointsTypes, state) {
 };
 
 // генерация городов
-const generateCitysList = function (destinations) {
-  let newCitysList = '';
+const generateCitys = function (destinations) {
+  let newCitys = '';
   for (let i = 0; i < destinations.length; i++) {
-    newCitysList += `<option value="${he.encode(destinations[i].city)}"></option>`;
+    newCitys += `<option value="${he.encode(destinations[i].city)}"></option>`;
   }
 
-  return newCitysList;
+  return newCitys;
 };
 
 // генерация картинок
@@ -122,7 +122,7 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
   const currentDestinationCity = hasDestination ? destination.city : '';
   const deleteBtn = generateDeleteBtn(canFold, isDeleting, isDisabled);
   const saveBtn = generateSaveBtn(isSaving, isDeleting);
-  const citysList = generateCitysList(destinations);
+  const citys = generateCitys(destinations);
 
   return `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -152,7 +152,7 @@ const createFormEditTemplate = (pointsTypes, state, hasArrowButton, destinations
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestinationCity}" list="destination-list-1">
             <datalist id="destination-list-1">
 
-              ${citysList}
+              ${citys}
 
             </datalist>
           </div>
