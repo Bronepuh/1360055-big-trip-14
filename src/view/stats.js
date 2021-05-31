@@ -10,7 +10,6 @@ const BAR_HEIGHT = 55;
 
 const renderMoneyChart = (moneyCtx, points) => {
   const money = countMoney(points);
-  money.sort((a, b) => b[1] - a[1]);
   const labels = money.map((item) => item[0].toUpperCase());
   const chartData = money.map((item) => item[1]);
   moneyCtx.height = BAR_HEIGHT * 9;
@@ -83,7 +82,6 @@ const renderMoneyChart = (moneyCtx, points) => {
 
 const renderTypeChart = (typeCtx, points) => {
   const types = countType(points);
-  types.sort((a, b) => b[1] - a[1]);
   const labels = types.map((item) => item[0].toUpperCase());
   const chartData = types.map((item) => item[1]);
   typeCtx.height = BAR_HEIGHT * 9;
@@ -156,7 +154,6 @@ const renderTypeChart = (typeCtx, points) => {
 
 const renderTimeChart = (timeCtx, points) => {
   const time = countTime(points);
-  time.sort((a, b) => b[1] - a[1]);
   const labels = time.map((item) => item[0].toUpperCase());
   const chartData = time.map((item) => item[1]);
   timeCtx.height = BAR_HEIGHT * 9;
