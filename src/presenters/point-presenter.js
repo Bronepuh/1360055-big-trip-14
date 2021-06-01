@@ -87,8 +87,10 @@ export default class PointPresenter {
     }
   }
 
-
   setViewState(state) {
+    if (!this._formEditComponent.isActive) {
+      return;
+    }
     switch (state) {
       case State.SAVING:
         this._formEditComponent.updateState({
@@ -106,10 +108,13 @@ export default class PointPresenter {
   }
 
   _replacePointToForm() {
+    const newState = FormEditView.parsePointToState(this._point, this._destinationsModel.getDestinations(), this._pointTypesModel.getPointsTypes());
     replace(this._formEditComponent, this._eventPointComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
+
+    this._formEditComponent.updateState(newState);
   }
 
   _replaceFormToPoint() {

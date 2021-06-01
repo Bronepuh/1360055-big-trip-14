@@ -32,6 +32,9 @@ export const createElement = (template) => {
 };
 
 export const replace = (newChild, oldChild) => {
+  newChild.isActive = true;
+  oldChild.isActive = false;
+
   if (oldChild instanceof Abstract) {
     oldChild = oldChild.getElement();
   }
