@@ -252,8 +252,13 @@ export default class FormEdit extends SmartView {
     this._setDateToChangePicker();
   }
 
-  getTemplate() {
+  reset(point) {
+    this._point = point;
+    const newState = FormEdit.parsePointToState(this._point, this._destinations, this._pointsTypes);
+    this.updateState(newState);
+  }
 
+  getTemplate() {
     return createFormEditTemplate(this._pointsTypes, this._state, this._hasArrowButton, this._destinations, this._isDeleting, this._isDisabled);
   }
 

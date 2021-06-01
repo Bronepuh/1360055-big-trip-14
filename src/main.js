@@ -5,7 +5,6 @@ import DestinationsModel from './model/destinations';
 import PointTypesModel from './model/point-types';
 import Api from './api.js';
 
-
 const AUTHORIZATION = 'Basic bronepuh';
 const END_POINT = 'https://14.ecmascript.pages.academy/big-trip';
 
